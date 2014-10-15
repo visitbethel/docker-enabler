@@ -5,10 +5,7 @@ Silver Fabric Docker Enabler Guide
 
 Introduction
 --------------------------------------
-A Silver Fabric Docker Enabler allows an external application or application platform, such as a 
-J2EE application server that has been dockerized to run in a TIBCO Silver Fabric software environment.
-This enabler essentially provides integration between Silver Fabric and the dockerized. 
-The Enabler automatically provisions, orchestrates, controls and manages a dockerized  application. 
+Silver Fabric Docker Enabler  adapts an application process running within a Docker container to be provisioned and orchestrated vy Silver Fabric. 
 
 Supported Platforms
 --------------------------------------
@@ -41,46 +38,29 @@ mvn package -Ddistribution.version=1.0.1
 
 Overview
 --------------------------------------
-xxxx
+Docker containers can be viewed from two perspectives:
+
+* As lightweight VMs
+* As an application-level packaging mechanism
+
+This Enabler take the latter view where a Docker container is treated as alternative application packaging in addition to Silver Fabric's own "gridlib" application packaging mechanism.
+Doing this way allows Silver Fabric to allow application process from both type of packaging to mix and interact as Docker is not suitable for all kinds of application.
 
 Statistics
 --------------------------------------
-xxxx
+There are 2 kinds of statistic related to a running Docker container:
+* Application-level statistics.
+This are often via some mechanism like JMX or plain writing to files.
+
+* Container-level statistics.
+At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API.
+
+Regardles, user can user Silver Fabric's scripting statistics to gather statistics of interest by using scripting support in Jython, JRubcy or ECMAScript.
+
+Logs
+-----
 
 Runtime Context Variables
 --------------------------------------
-
-                
-###JDK and JVM-related runtimes-related:###
-         
-* **JDK_NAME** -  The name of the required JDK
-    * Default value: j2sdk 
-    * Type: String
-	
-* **JDK_VERSION** - The version of the required JDK
-    * Default value: 1.7 
-    * Type: String
-	
-* **JAVA_HOME** -  The Java home directory
-    * Default value: ${GRIDLIB_JAVA_HOME} 
-    * Type: Environment
-	
-
-
-        
-###Others :###
-         
-* **BIND_ON_ALL_LOCAL_ADDRESSES** -  Specify if all network interfaces should be bounded for the SSHd, JMX server, HTTP(s) connectors
-    * Default value: true 
-    * Type: String 
-            
-* **LISTEN_ADDRESS_NET_MASK** -A comma delimited list of net masks in CIDR notation.  The first IP address found that matches one of the net masks is used as the listen address.  Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.  
-    * Default value:
-    * Type: Environment 
-           
-* **DELETE_RUNTIME_DIR_ON_SHUTDOWN** -  Whether to delete the Karaf runtime directory on shutdown. Note: Set to false if you need to review if any configuration is done correctly with runtime context variables.
-    * Default value: true 
-    * Type: Environment 
-            
 
             
