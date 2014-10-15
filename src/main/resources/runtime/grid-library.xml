@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grid-library os="linux64">
+	<grid-library-name>docker-enabler</grid-library-name>
+	<grid-library-version>1.0</grid-library-version>
+
+	<jar-path>
+		<pathelement>ds_jars</pathelement>
+	</jar-path>
+    <!--
+	<dependency>
+		<grid-library-name>docker-distribution</grid-library-name>
+		<grid-library-version>${distribution.version}</grid-library-version>
+	</dependency> -->
+</grid-library>

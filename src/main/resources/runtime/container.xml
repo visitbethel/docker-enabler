@@ -1,0 +1,269 @@
+<container class="org.fabrician.enabler.DockerContainer" name="DockerContainer">
+    <import package="com.datasynapse.fabric.common"/>
+    <import package="com.datasynapse.fabric.container"/>
+    <import package="com.datasynapse.fabric.util"/>
+    <import package="com.datasynapse.fabric.stats"/>
+    <import package="com.datasynapse.fabric.stats.aggregator"/>
+    <import package="com.datasynapse.fabric.stats.evaluator"/>
+    <import package="com.datasynapse.fabric.stats.provider"/>
+    <import package="com.datasynapse.fabric.domain"/>
+    <import package="org.fabrician.enabler.DockerContainer"/>
+    
+    <property name="name" value="Silver Fabric Docker Enabler"/>
+    <property name="description" value="Enabler for running Docker containers"/>
+    <property name="version" value="1.0"/>
+    <property name="distributionVersion" value="${distribution.version}"/>
+    <property name="supportedDomainType" value="Default:${component.type.version}"/>
+    <property name="blocking" value="true"/>
+    <property name="shutdownTimeout" value="300000"/>
+    
+    <windowsCommand class="com.datasynapse.fabric.container.LifecycleCommand">
+        <property name="startupCommand" value="${DOCKER_BASE_DIR}\shell\start.bat"/>
+        <property name="shutdownCommand" value="${DOCKER_BASE_DIR}\shell\stop.bat"/>
+    </windowsCommand>
+    <unixCommand class="com.datasynapse.fabric.container.LifecycleCommand">
+        <property name="startupCommand" value="${DOCKER_BASE_DIR}/shell/start.sh"/>
+        <property name="shutdownCommand" value="${DOCKER_BASE_DIR}/shell/stop.sh"/>
+    </unixCommand>
+    <startCondition class="org.fabrician.enabler.DockerStartCondition">
+        <property name="pollPeriod" value="5000"/>
+    </startCondition>
+    <runningCondition class="org.fabrician.enabler.DockerRunningCondition">
+        <property name="pollPeriod" value="5000"/>
+    </runningCondition>
+    
+    <supportedFeature class="com.datasynapse.fabric.container.Feature">
+        <property name="name" value="HTTP Support"/>
+        <property name="description" value="Support for HTTP routing"/>
+        <property name="infoClass" value="com.datasynapse.fabric.domain.featureinfo.HttpFeatureInfo"/>
+    </supportedFeature>
+    
+    <supportedFeature class="Feature">
+        <property name="name" value="Application Logging Support"/>
+        <property name="description" value="Support for handling of custom application logs"/>
+        <property name="infoDescription" value="Specify if application logs are archived to the Engine log directory for viewing/searching. &lt;i>Note: The current application logs are still available for viewing/searching if this is not checked.&lt;/i>"/>
+        <property name="infoClass" value="org.fabrician.enabler.DockerLoggingInfo"/>
+    </supportedFeature>
+    
+    <runtimeContextTemplate class="DefaultRuntimeContext">
+        <!-- JDK-related for any usage of third-party Java library-->
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="JDK_NAME"/>
+            <property name="value" value="j2sdk"/>
+            <property name="type" value="String"/>
+            <property name="description" value="The name of the required JDK"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="JDK_VERSION"/>
+            <property name="value" value="1.7"/>
+            <property name="type" value="String"/>
+            <property name="description" value="The version of the required JDK"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="JAVA_HOME"/>
+            <property name="value" value="${GRIDLIB_JAVA_HOME}"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="The Java home directory"/>
+        </variable>
+        <!-- Docker enabler-related directories -->
+
+        <variable class="com.datasynapse.fabric.common.RuntimeContextVariable">
+			<property name="name" value="DOCKER_BASE_DIR"/>
+			<property name="value" value="${container.getWorkDir()}/docker"/>
+			<property name="type" value="Environment"/>
+			<property name="description" value="Base parent dir containing Dockerfile build context dir, logs dir and stats dir"/>
+		</variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="DOCKER_CONTEXT_DIR"/>
+            <property name="value" value="${DOCKER_BASE_DIR}/docker_context"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Dir containing the Dockerfile and associated dirs and files to be used in image build."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="DOCKER_LOGS_DIR"/>
+            <property name="value" value="${DOCKER_BASE_DIR}/docker_logs"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Host dir mounted for dumping any logs data from within Docker containers"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="DOCKER_STATS_DIR"/>
+            <property name="value" value="${DOCKER_BASE_DIR}/docker_stats"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Host dir mounted for dumping any stats data from within Docker containers"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="DOCKER_ENVS_DIR"/>
+            <property name="value" value="${DOCKER_BASE_DIR}/docker_envs"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Host dir where environment properties files for container are located"/>
+        </variable>
+         <variable class="RuntimeContextVariable">
+            <property name="name" value="CID_FILE"/>
+            <property name="value" value="${DOCKER_BASE_DIR}/${DOCKER_CONTAINER_NAME}.cid"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="A file that is created when a Docker container is created and run."/>
+        </variable>
+        
+       <!-- Sudo -->
+       <variable class="RuntimeContextVariable">
+            <property name="name" value="USE_SUDO"/>
+            <property name="value" value="false"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Run Docker with sudo. The sudo must not prompt for password!"/>
+        </variable>
+        
+       <!-- HTTP feature -->
+       <variable class="com.datasynapse.fabric.common.RuntimeContextVariable">
+            <property name="name" value="HTTP_PORT"/>
+            <property name="value" value="9090"/>
+            <property name="type" value="Environment"/>
+            <property name="autoIncrementType" value="Numeric"/>
+            <property name="description" value="HTTP listen port"/>
+        </variable>
+        <variable class="com.datasynapse.fabric.common.RuntimeContextVariable">
+            <property name="name" value="HTTPS_PORT"/>
+            <property name="value" value="9443"/>
+            <property name="type" value="Environment"/>
+            <property name="autoIncrementType" value="Numeric"/>
+            <property name="description" value="HTTPS listen port"/>
+        </variable>
+       <!-- Dockerfile image-build-related-->
+       <variable class="RuntimeContextVariable">
+            <property name="name" value="DOCKER_IMAGE_NAME"/>
+            <property name="value" value="joe/app"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Docker image name to generate or use for container creation. ex. 'joe/archiva:211'"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="BUILD_ALWAYS"/>
+            <property name="value" value="false"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Always attempt a Dockerfile build first before running a container."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="REUSE_IMAGE"/>
+            <property name="value" value="true"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Skip build and reuse image if it already exist."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="BUILD_VERBOSE"/>
+            <property name="value" value="true"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Emit verbose build steps when building image."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="USE_CACHE"/>
+            <property name="value" value="true"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Use existing build cache to speed up build"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="REMOVE_SUCCESS"/>
+            <property name="value" value="true"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Only remove any build intermediate containers if final build is successful."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="REMOVE_ALWAYS"/>
+            <property name="value" value="false"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Always remove any build intermediate containers, even if final build failed."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="BUILD_TIMEOUT"/>
+            <property name="value" value="200"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Max number of secs before build is terminated and failed."/>
+        </variable>
+       
+        
+        <!--Docker container lifecycle management-related -->
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="DOCKER_CONTAINER_NAME"/>
+            <property name="value" value="my_container"/>
+            <property name="type" value="Environment"/>
+            <property name="autoIncrementType" value="Append"/>
+            <property name="description" value="Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="REUSE_CONTAINER"/>
+            <property name="value" value="false"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Reuse existing same named container instead of creating a new one"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="PRIVILEDGED_MODE"/>
+            <property name="value" value="false"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Set the container to run in privileged mode"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="CMD_OVERRIDE"/>
+            <property name="value" value=""/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Command executable (and any of its arguments) to run in a container that result in a foreground process. Note: If the image also specifies an 'ENTRYPOINT' then this get appended as arguments to the ENTRYPOINT."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="ENTRY_POINT_OVERRIDE"/>
+            <property name="value" value=""/>
+            <property name="type" value="String"/>
+            <property name="description" value="Overrides default executable(usually '/bin/bash') to run when container starts up. Use this in conjunction with 'CMD_OVERRIDE'"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="USER_OVERRIDE"/>
+            <property name="value" value=""/>
+            <property name="type" value="String"/>
+            <property name="description" value="Overrides default user('root', uid=0) within a container when it starts up. Use Username or UID"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="WORKDIR_OVERRIDE"/>
+            <property name="value" value=""/>
+            <property name="type" value="String"/>
+            <property name="description" value="Overrides default working dir inside Docker container"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="!ENV_FILE_Default"/>
+            <property name="value" value="${DOCKER_ENVS_DIR}/envs.properties"/>
+            <property name="type" value="String"/>
+            <property name="description" value="An properties file containing environment variables to be injected into container. This may override some or all 'ENV' already set in the image"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="MEMORY_LIMIT"/>
+            <property name="value" value="256m"/>
+            <property name="type" value="String"/>
+            <property name="description" value="Upper limit to container RAM memory in the format NNNx where NNN is an integer and x is the unit(b,k,m, or g). ex. 256m"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="MAX_STOP_TIME_BEFORE_KILL"/>
+            <property name="value" value="30"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Maxiumum secs to wait before a force stop is used to shutdown a Docker container"/>
+        </variable>
+        
+        <!-- Public host ports to Docker container mapping-->
+        
+       
+        <!--  SF-specific funtionality-->
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="BIND_ON_ALL_LOCAL_ADDRESSES"/>
+            <property name="value" value="false"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Specify if all network interfaces should be bounded for all public port access"/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="LISTEN_ADDRESS_NET_MASK"/>
+            <property name="value" value=""/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="A comma delimited list of net masks in CIDR notation.  The first IP address found that matches one of the net masks is used as the listen address.  Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting."/>
+        </variable>
+        <variable class="RuntimeContextVariable">
+            <property name="name" value="DELETE_RUNTIME_DIR_ON_SHUTDOWN"/>
+            <property name="value" value="true"/>
+            <property name="type" value="Environment"/>
+            <property name="description" value="Whether to delete the Docker runtime directory on shutdown. This includes removing the Docker container."/>
+        </variable>
+        
+    </runtimeContextTemplate>
+    
+</container>
