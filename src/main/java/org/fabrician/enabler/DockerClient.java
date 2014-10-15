@@ -449,41 +449,4 @@ public class DockerClient implements Closeable {
         return Optional.fromNullable((values != null && values.size() >= 1) ? values.iterator().next() : null);
     }
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        DockerClient client = null;
-        try {
-            String c_id = "3f35f4a383b8c3b848ec775f91d7ac6e69c1f6dd234624768f98af25b375ee7a";
-            String c_name = "my_archiva1";
-            String img_id = "f0fe5d88bf998abaf4bd61a8d9ba0d637cc9a5dc33183c9de783e6782aa68e36";
-            String img_name = "blau/archiva211:latest";
-            client = DockerClient.getInstance("bklau-hp", 2375);
-            Optional<Container> c = client.inspectContainer("MyDocker1");
-            if (c.isPresent()) {
-                System.out.println(c.get());
-                client.removeContainer(c.get().getId(),null);
-            }
-            // client.createContainer(c_name, Config.builder().imageId(img_name).build());
-            // System.out.println("Start by c_id :" + client.startContainer(c_name,null));
-            // Thread.sleep(30000);
-            // System.out.println(client.inspectContainer(c_name));
-            // System.out.println("Stop by c_id :" + client.stopContainer(c_name));
-            // Thread.sleep(30000);
-            // System.out.println(client.inspectContainer(c_name));
-            // System.out.println("Remove by c_id :" + client.removeContainer(c_name,null));
-            // Thread.sleep(30000);
-            // //System.out.println("Cont removed :" + client.isContainerExist(c_name));
-            // System.out.println("Cont removed :" + !client.isContainerExist(c_name));
-            // System.out.println("Found :" + client.searchContainer(c_name, false));
-            // System.out.println("Found :" + client.searchContainer(c_name, true));
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            client.close();
-        }
-    }
-
 }
