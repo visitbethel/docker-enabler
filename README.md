@@ -6,7 +6,7 @@ Silver Fabric Docker Enabler Guide
 Introduction
 --------------------------------------
 Silver Fabric Docker Enabler adapts a Docker container to be provisioned and orchestrated by TIBCO Silver Fabric. Only useful Docker features are adapted in the context of the normative use of Silver Fabric.
-This enabler is based on ***Docker 1.2.0** runtime on Linux64.
+This enabler is based on **Docker 1.2.0** runtime on Linux64.
 
 Supported Platforms
 --------------------------------------
@@ -87,7 +87,7 @@ Logs
 -----
 * Most application probably logged to a directory within the Docker container. This needs to be exposed to Silver Fabric statistic collection mechanism by mapping an external  host volume to an internal Docker log volume.
 
-* If an application logs to **STD_OUT**, Docker can extract that via the CLI ( see [docker logs]):
+* If an application logs to **STDOUT**, Docker can extract that via the CLI ( see [docker logs]):
 ```sh
 docker logs <container name >
 ```
@@ -98,7 +98,7 @@ Runtime Context Variables
 
 How Tos
 -------
- (1). How do I map a public host port(ex.9090) to an internal Docker container port(ex.8080)?
+ ***(1) How do I map a public host port(ex.9090) to an internal Docker container port(ex.8080)?***
 ```
 
   First, create an auto-increment "Numeric" runtime context variable of type "String" for host port like  so:
@@ -112,7 +112,7 @@ How Tos
   Note: The internal port 8080 will be publically exposed as port 9090,9091, 9092,...depending on the engine     instances the Docker container is managed from.
 ```
 
- (2). How do I mount a host directory(ex. "/logs") to an internal Docker container directory(ex. "/my_logs")?
+ ***(2) How do I mount a host directory(ex. "/logs") to an internal Docker container directory(ex. "/my_logs")?***
 
 ```
   
@@ -124,7 +124,7 @@ How Tos
   
 ```
 
- (3). How do I add one or more environmental variables to the Docker container?
+ ***(3) How do I add one or more environmental variables to the Docker container?***
 
 ```
   There are 2 ways that you can do that:
@@ -144,7 +144,7 @@ How Tos
 
 ```
 
-  (4). How do I build and run a Docker file?
+  ***(4) How do I build and run a Docker file?***
 
 ```
   Upload your Dockerfile as a content file using relative content   "docker/docker_context" directory as the     target directory for the Dockerfile.
