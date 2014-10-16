@@ -94,6 +94,55 @@ docker logs <container name >
 
 Runtime Context Variables
 --------------------------------------
+The runtime context variables for this enabler are classified into 4 categories:
+
+***A. Operations-related***
+
+Variable Name|Value|Type|Description|Export|Auto Increment
+---|---|---|---|---|---
+USE_SUDO|false|Environment|Run Docker with sudo. The sudo must not prompt for password!|false|None
+JDK_NAME|j2sdk|String|The name of the required JDK|false|None
+JDK_VERSION|1.7|String|The version of the required JDK|false|None
+JAVA_HOME|${GRIDLIB_JAVA_HOME}|Environment|The Java home directory|false|None
+DELETE_RUNTIME_DIR_ON_SHUTDOWN|true|Environment|Whether to delete the Docker runtime directory on shutdown. This includes removing the Docker container.|false|None
+DOCKER_BASE_DIR|${container.getWorkDir()}/docker|Environment|Base parent dir containing Dockerfile build context dir, logs dir and stats dir|false|None
+DOCKER_CONTEXT_DIR|${DOCKER_BASE_DIR}/docker_context|Environment|Dir containing the Dockerfile and associated dirs and files to be used in image build.|false|None
+DOCKER_LOGS_DIR|${DOCKER_BASE_DIR}/docker_logs|Environment|Host dir mounted for dumping any logs data from within Docker containers|false|None
+DOCKER_STATS_DIR|${DOCKER_BASE_DIR}/docker_stats|Environment|Host dir mounted for dumping any stats data from within Docker containers|false|None
+DOCKER_ENVS_DIR|${DOCKER_BASE_DIR}/docker_envs|Environment|Host dir where environment properties files for container are located|false|None
+HTTP_PORT|9090|Environment|HTTP listen port|false|Numeric
+HTTPS_PORT|9443|Environment|HTTPS listen port|false|Numeric
+
+***B. Dockerfile build-related***
+
+Variable Name|Value|Type|Description|Export|Auto Increment
+---|---|---|---|---|---
+DOCKER_IMAGE_NAME|joe/app|Environment|Docker image name to generate or use for container creation. ex. 'joe/archiva:211'|false|None
+BUILD_ALWAYS|false|String|Always attempt a Dockerfile build first before running a container.|false|None
+REUSE_IMAGE|true|String|Skip build and reuse image if it already exist.|false|None
+BUILD_VERBOSE|true|String|Emit verbose build steps when building image.|false|None
+USE_CACHE|true|String|Use existing build cache to speed up build|false|None
+REMOVE_SUCCESS|true|String|Only remove any build intermediate containers if final build is successful.|false|None
+REMOVE_ALWAYS|false|String|Always remove any build intermediate containers, even if final build failed.|false|None
+BUILD_TIMEOUT|200|String|Max number of secs before build is terminated and failed.|false|None
+
+***C. Docker container-related***
+
+Variable Name|Value|Type|Description|Export|Auto Increment
+---|---|---|---|---|---
+DOCKER_CONTAINER_NAME|my_container|Environment|Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc|false|Append
+REUSE_CONTAINER|false|String|Reuse existing same named container instead of creating a new one|false|None
+PRIVILEDGED_MODE|false|String|Set the container to run in privileged mode|false|None
+CMD_OVERRIDE||Environment|Command executable (and any of its arguments) to run in a container that result in a foreground process. Note: If the image also specifies an 'ENTRYPOINT' then this get appended as arguments to the ENTRYPOINT.|false|None
+ENTRY_POINT_OVERRIDE||String|Overrides default executable(usually '/bin/bash') to run when container starts up. Use this in conjunction with 'CMD_OVERRIDE'|false|None
+USER_OVERRIDE||String|Overrides default user('root', uid=0) within a container when it starts up. Use Username or UID|false|None
+WORKDIR_OVERRIDE||String|Overrides default working dir inside Docker container|false|None
+!ENV_FILE_Default|${DOCKER_ENVS_DIR}/envs.properties|String|An properties file containing environment variables to be injected into container. This may override some or all 'ENV' already set in the image|false|None
+MEMORY_LIMIT|256m|String|Upper limit to container RAM memory in the format NNNx where NNN is an integer and x is the unit(b,k,m, or g). ex. 256m|false|None
+MAX_STOP_TIME_BEFORE_KILL|30|Environment|Maxiumum secs to wait before a force stop is used to shutdown a Docker container|false|None
+CID_FILE|${DOCKER_BASE_DIR}/${DOCKER_CONTAINER_NAME}.cid|Environment|A file that is created when a Docker container is created and run.|false|None
+BIND_ON_ALL_LOCAL_ADDRESSES|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
+LISTEN_ADDRESS_NET_MASK||Environment|A comma delimited list of net masks in CIDR notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
 
 
 How Tos
