@@ -16,6 +16,8 @@
     <property name="supportedDomainType" value="Default:${component.type.version}"/>
     <property name="blocking" value="true"/>
     <property name="shutdownTimeout" value="300000"/>
+    <property name="maxBuildLockRetries" value="20"/>
+    <property name="buildLockRetryPause" value="10"/>
     
     <windowsCommand class="com.datasynapse.fabric.container.LifecycleCommand">
         <property name="startupCommand" value="${DOCKER_BASE_DIR}\shell\start.bat"/>
@@ -132,7 +134,7 @@
             <property name="name" value="DOCKER_IMAGE_NAME"/>
             <property name="value" value="joe/app"/>
             <property name="type" value="Environment"/>
-            <property name="description" value="Docker image name to generate or use for container creation. ex. 'joe/archiva:211'"/>
+            <property name="description" value="Required. Docker image name to generate or use for container creation. ex. 'joe/archiva:211'"/>
         </variable>
         <variable class="RuntimeContextVariable">
             <property name="name" value="BUILD_ALWAYS"/>
@@ -174,7 +176,7 @@
             <property name="name" value="BUILD_TIMEOUT"/>
             <property name="value" value="200"/>
             <property name="type" value="String"/>
-            <property name="description" value="Max number of secs before build is terminated and failed."/>
+            <property name="description" value="Max number of secs a Dockerfile build is allowed for completion before terminated."/>
         </variable>
        
         
@@ -184,7 +186,7 @@
             <property name="value" value="my_container"/>
             <property name="type" value="Environment"/>
             <property name="autoIncrementType" value="Append"/>
-            <property name="description" value="Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc"/>
+            <property name="description" value="Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc. "/>
         </variable>
         <variable class="RuntimeContextVariable">
             <property name="name" value="REUSE_CONTAINER"/>
@@ -196,7 +198,7 @@
             <property name="name" value="PRIVILEDGED_MODE"/>
             <property name="value" value="false"/>
             <property name="type" value="String"/>
-            <property name="description" value="Set the container to run in privileged mode"/>
+            <property name="description" value="Set the container to run in privileged mode. Use this to run Docker container from within another container!"/>
         </variable>
         <variable class="RuntimeContextVariable">
             <property name="name" value="CMD_OVERRIDE"/>
@@ -249,7 +251,7 @@
             <property name="name" value="BIND_ON_ALL_LOCAL_ADDRESSES"/>
             <property name="value" value="false"/>
             <property name="type" value="Environment"/>
-            <property name="description" value="Specify if all network interfaces should be bounded for all public port access"/>
+            <property name="description" value="Specify if all network interfaces should be bounded for all public port access. If true, bound to '0.0.0.0' address."/>
         </variable>
         <variable class="RuntimeContextVariable">
             <property name="name" value="LISTEN_ADDRESS_NET_MASK"/>

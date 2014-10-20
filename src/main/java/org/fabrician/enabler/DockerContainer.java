@@ -23,6 +23,7 @@ import org.fabrician.enabler.predicates.ContainerPredicates;
 import org.fabrician.enabler.util.BuildCmdOptions;
 import org.fabrician.enabler.util.DockerActivationInfo;
 import org.fabrician.enabler.util.DockerActivationInfo.Entry;
+import org.fabrician.enabler.util.DockerfileBuildLock;
 import org.fabrician.enabler.util.RunCmdAuxiliaryOptions;
 
 import com.datasynapse.fabric.common.ActivationInfo;
@@ -35,6 +36,7 @@ import com.datasynapse.fabric.util.ContainerUtils;
 import com.datasynapse.fabric.util.DynamicVarsUtils;
 import com.datasynapse.gridserver.engine.EngineProperties;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
@@ -50,6 +52,7 @@ public class DockerContainer extends ExecContainer {
     private static final String BIND_ON_ALL_LOCAL_ADDRESSES_VAR = "BIND_ON_ALL_LOCAL_ADDRESSES";
     private static final String DOCKER_CONTAINER_BIND_ADDRESS_VAR = "DOCKER_CONTAINER_BIND_ADDRESS";
     private static final String DOCKER_CONTAINER_NAME_VAR = "DOCKER_CONTAINER_NAME";
+    private static final String DOCKER_CONTAINER_TAG_VAR = "DOCKER_CONTAINER_TAG";
     private static final String USE_SUDO_VAR = "USE_SUDO";
     private static final String REUSE_CONTAINER_VAR = "REUSE_CONTAINER";
     private static final String PORT_MAP_PREFIX = "!PORT_MAP_"; // all context vars that starts with "!PORT_MAP_" are reckoned to be a host-to-container ports mapping by convention
@@ -69,12 +72,15 @@ public class DockerContainer extends ExecContainer {
 
     private HttpFeatureInfo httpFeatureInfo = null;
     private static final int UNDEFINED_PORT = -1;
-    private String dockerContainerName;
+    private String dockerContainerTag;
     private String dockerImage;
     private String dockerContainerId;
+    private String dockerBindAddress = "0.0.0.0";
     private boolean reuseContainer = false;
     private boolean useSudo = false;
     private DockerClient dockerClient;
+    private int maxBuildLockRetries = 20;
+    private int buildLockRetryPause = 10;
 
     public boolean isHttpEnabled() {
         return (httpFeatureInfo != null ? httpFeatureInfo.isHttpEnabled() : false);
@@ -84,21 +90,34 @@ public class DockerContainer extends ExecContainer {
         return (httpFeatureInfo != null ? httpFeatureInfo.isHttpsEnabled() : false);
     }
 
+    public int getMaxBuildLockRetries() {
+        return maxBuildLockRetries;
+    }
+
+    public void setMaxBuildLockRetries(int maxBuildLockRetries) {
+        this.maxBuildLockRetries = maxBuildLockRetries;
+    }
+
+    public int getBuildLockRetryPause() {
+        return buildLockRetryPause;
+    }
+
+    public void setBuildLockRetryPause(int buildLockRetryPause) {
+        this.buildLockRetryPause = buildLockRetryPause;
+    }
+
     @Override
     protected void doInit(List<RuntimeContextVariable> additionalVariables) throws Exception {
         // Initialization done here before running Docker container, including building
         // Dockerfile
         getEngineLogger().fine("Invoking doInit()...");
+        validateHttpFeature();
         dockerClient = DockerClient.getInstance();
-        dockerContainerName = resolveToString(DOCKER_CONTAINER_NAME_VAR);
-        if (dockerContainerName.isEmpty()) {
-            dockerContainerName = getDefaultDockerContainerName();
-        }
-        dockerImage = resolveToString(DOCKER_IMAGE_NAME_VAR);
-        Validate.notEmpty(dockerImage, DOCKER_IMAGE_NAME_VAR + " must be specified.");
-
+        dockerContainerTag = resolveDockerContainerTag();
+        dockerImage = resolveDockerImage();
         useSudo = resolveToBoolean(USE_SUDO_VAR);
         reuseContainer = resolveToBoolean(REUSE_CONTAINER_VAR);
+        dockerBindAddress = resolveDockerBindingAddress();
         // build image first if needed
         // check if we should build?
         boolean shouldBuild = resolveToBoolean(BUILD_ALWAYS_VAR);
@@ -108,28 +127,17 @@ public class DockerContainer extends ExecContainer {
             boolean image_exist = dockerClient().isImageExist(dockerImage);
             Validate.isTrue(image_exist, "Docker image specified [" + dockerImage + "] is not available on Docker host.");
         } else {
-            buildDockerImage();
+            File dockerFile = resolveDockerfile();
+            Optional<DockerfileBuildLock> lock = DockerfileBuildLock.acquire(dockerImage, dockerFile, getMaxBuildLockRetries(), getBuildLockRetryPause());
+            if (lock.isPresent()) {
+                buildDockerImage();
+                lock.get().release();
+            } else {
+                throw new Exception("Can't build from Docker file due to failure to acquire build lock!");
+            }
         }
 
-        // /
-        httpFeatureInfo = (HttpFeatureInfo) ContainerUtils.getFeatureInfo(Feature.HTTP_FEATURE_NAME, this, getCurrentDomain());
-
-        boolean httpEnabled = isHttpEnabled();
-        boolean httpsEnabled = isHttpsEnabled();
-        if (!httpEnabled && !httpsEnabled) {
-            throw new Exception("HTTP or HTTPS must be enabled in the Domain");
-        }
-        if (httpEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTP_PORT_VAR)) {
-            throw new Exception("HTTP is enabled but the " + HttpFeatureInfo.HTTP_PORT_VAR + " runtime context variable is not set");
-        }
-        if (httpsEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTPS_PORT_VAR)) {
-            throw new Exception("HTTPS is enabled but the " + HttpFeatureInfo.HTTPS_PORT_VAR + " runtime context variable is not set");
-        }
-
-        String bindAllStr = getStringVariableValue(BIND_ON_ALL_LOCAL_ADDRESSES_VAR, "true");
-        boolean bindAll = Boolean.valueOf(bindAllStr);
-        String dockerBindAddress = bindAll ? "0.0.0.0" : getStringVariableValue(LISTEN_ADDRESS_VAR);
-
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_CONTAINER_TAG_VAR, dockerContainerTag, RuntimeContextVariable.ENVIRONMENT_TYPE));
         additionalVariables.add(new RuntimeContextVariable(DOCKER_CONTAINER_BIND_ADDRESS_VAR, dockerBindAddress, RuntimeContextVariable.STRING_TYPE));
         // construct a host ports to docker container ports mappings
         buildHostToDockerContainerPortMappings(additionalVariables);
@@ -247,7 +255,7 @@ public class DockerContainer extends ExecContainer {
         // things to do after starting docker container
         getEngineLogger().fine("Invoking doInstall()...");
         // Add any additional Docker container inspection info here
-        dockerContainerId = DockerActivationInfo.inject(info, this.dockerContainerName, this.dockerClient()).getDockerProperty(Entry.docker_id).orNull();
+        dockerContainerId = DockerActivationInfo.inject(info, this.dockerContainerTag, this.dockerClient()).getDockerProperty(Entry.docker_id).orNull();
         if (isHttpEnabled()) {
             info.setProperty(HttpFeatureInfo.HTTP_PORT_VAR, String.valueOf(getHttpPort()));
         }
@@ -317,9 +325,9 @@ public class DockerContainer extends ExecContainer {
         if (useSudo) {
             command += "sudo ";
         }
-        getEngineLogger().info(Strings.repeat("-",10) + " begin build command " + Strings.repeat("-",10));
+        getEngineLogger().info(Strings.repeat("-", 10) + " begin build command " + Strings.repeat("-", 10));
         getEngineLogger().info(command);
-        getEngineLogger().info(Strings.repeat("-",10) + " end build command " + Strings.repeat("-",10));
+        getEngineLogger().info(Strings.repeat("-", 10) + " end build command " + Strings.repeat("-", 10));
         ProcessWrapper p = null;
         int build_timeout = resolveToInteger(BUILD_TIMEOUT_VAR);// in secs
         try {
@@ -344,11 +352,11 @@ public class DockerContainer extends ExecContainer {
             throw ex;
         }
         // check for image
-        
+
         image_exist = dockerClient().isImageExist(dockerImage);
-        if(!image_exist){
+        if (!image_exist) {
             throw new Exception("Build failed for image [" + dockerImage + "]");
-        }else{
+        } else {
             getEngineLogger().info("Build succeeded for image [" + dockerImage + "]");
         }
     }
@@ -399,6 +407,13 @@ public class DockerContainer extends ExecContainer {
         }
     }
 
+    private File resolveDockerfile() throws Exception {
+        File dockerContextDir = resolveToFile(DOCKER_CONTEXT_DIR_VAR);
+        File dockerFile = new File(dockerContextDir, "Dockerfile");
+        Validate.isTrue(dockerFile.exists(), "Required Dockerfile for build does not exist at path [" + dockerFile.getCanonicalPath() + "]");
+        return dockerFile;
+    }
+
     // try and open a server socket. If we can then close it and return false
     // otherwise assume its in use and return true
     private boolean checkServerPortInUse(int port) {
@@ -425,13 +440,15 @@ public class DockerContainer extends ExecContainer {
         return Integer.valueOf(getStringVariableValue(HttpFeatureInfo.HTTPS_PORT_VAR, null));
     }
 
-    private String getDefaultDockerContainerName() {
+    private String createDockerContainerTag() {
         try {
             Joiner joiner = Joiner.on("_").skipNulls();
             String componentName = getComponentName();
+            getEngineLogger().info("component name=[" + componentName + "]");
             String username = getEngineUsername();
+            getEngineLogger().info("username=[" + username + "]");
             String instance = getEngineInstanceId();
-            return joiner.join(username, componentName, instance).toLowerCase();
+            return joiner.join(componentName, username, instance).toLowerCase();
         } catch (Exception ex) {
 
         }
@@ -443,14 +460,42 @@ public class DockerContainer extends ExecContainer {
     }
 
     private String getEngineUsername() throws Exception {
-        return getEngineProperty(EngineProperties.USERNAME);
+        String username = getEngineProperty(EngineProperties.USERNAME);
+        username=StringUtils.replaceChars(username,'-', '_');
+        return username;
     }
 
     private String getComponentName() {
         String componentName = getCurrentDomain().getName();
-        Iterable<String> parts = Splitter.on(" ").omitEmptyStrings().trimResults().split(componentName);
-        Joiner joiner = Joiner.on("_").skipNulls();
-        return joiner.join(parts);
+        if (componentName != null) {
+            Iterable<String> parts = Splitter.on(" ").omitEmptyStrings().trimResults().split(componentName);
+            Joiner joiner = Joiner.on("_").skipNulls();
+            componentName = joiner.join(parts);
+        }
+        componentName=StringUtils.replaceChars(componentName,'-','_');
+        return componentName;
+    }
+
+    private String resolveDockerBindingAddress() throws Exception {
+        String bindAllStr = getStringVariableValue(BIND_ON_ALL_LOCAL_ADDRESSES_VAR, "true");
+        boolean bindAll = Boolean.valueOf(bindAllStr);
+        String bindAddress = bindAll ? "0.0.0.0" : getStringVariableValue(LISTEN_ADDRESS_VAR);
+        return bindAddress;
+    }
+
+    private String resolveDockerImage() throws Exception {
+        String image = resolveToString(DOCKER_IMAGE_NAME_VAR);
+        Validate.notEmpty(image, DOCKER_IMAGE_NAME_VAR + " must be specified.");
+        return image;
+    }
+
+    private String resolveDockerContainerTag() throws Exception {
+        String tag = resolveToString(DOCKER_CONTAINER_NAME_VAR);
+        if (tag.isEmpty() || NumberUtils.isDigits(tag)) {
+            tag = createDockerContainerTag();
+            getEngineLogger().info("Auto-generate Docker container name tag to [" + tag + "]");
+        }
+        return tag;
     }
 
     private String resolveToString(String runtimeContextVariableName) throws Exception {
@@ -473,6 +518,23 @@ public class DockerContainer extends ExecContainer {
         return new File(val).getCanonicalFile();
     }
 
+    private void validateHttpFeature() throws Exception{
+        httpFeatureInfo = (HttpFeatureInfo) ContainerUtils.getFeatureInfo(Feature.HTTP_FEATURE_NAME, this, getCurrentDomain());
+
+        boolean httpEnabled = isHttpEnabled();
+        boolean httpsEnabled = isHttpsEnabled();
+        if (!httpEnabled && !httpsEnabled) {
+            throw new Exception("HTTP or HTTPS must be enabled in the Domain");
+        }
+        if (httpEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTP_PORT_VAR)) {
+            throw new Exception("HTTP is enabled but the " + HttpFeatureInfo.HTTP_PORT_VAR + " runtime context variable is not set");
+        }
+        if (httpsEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTPS_PORT_VAR)) {
+            throw new Exception("HTTPS is enabled but the " + HttpFeatureInfo.HTTPS_PORT_VAR + " runtime context variable is not set");
+        }
+
+    }
+    
     Logger logger() {
         return getEngineLogger();
     }
@@ -486,7 +548,7 @@ public class DockerContainer extends ExecContainer {
     }
 
     String dockerContainerName() {
-        return this.dockerContainerName;
+        return this.dockerContainerTag;
     }
 
     String dockerContainerInfo() {

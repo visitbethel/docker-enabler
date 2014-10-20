@@ -26,7 +26,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 echo "Stopping $DOCKER_CONTAINER_NAME"
-stop_cmd="docker stop -t $MAX_STOP_TIME_BEFORE_KILL $DOCKER_CONTAINER_NAME"
+stop_cmd="docker stop -t $MAX_STOP_TIME_BEFORE_KILL $DOCKER_CONTAINER_TAG"
 cmd=
 if [ "$USE_SUDO" == "true" ]; then
    cmd="sudo $stop_cmd"
