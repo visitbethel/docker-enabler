@@ -42,10 +42,12 @@ Each Silver Fabric engine daemon host needs to be "docker-enabled" before it can
 
 1. Install ***Docker 1.2.0*** runtime 
     * See [Install Docker] for details
-2. Configure ***Password-less sudo*** access to run Docker commands
+2. Configure ***Password-less sudo*** access to run Docker CLI commands and Remote API
     * See [Password-less sudo] for details
-3. Configure ***Docker Remote API*** to run on port ***2375(HTTP)***
+    * If sudo is not required, the password-less requirement still holds
+3. Configure ***Docker Remote API*** to run a TCP port
     * See [Configure Docker Remote API] for details
+    * The Remote API daemon needs to be acessible only via address ***127.0.0.1 on port 2375(HTTP)***
    
 After you have done the above 3 steps, you need to restart Silver Fabric engine daemon so that it will register the host as "***Docker-enabled***".
 
@@ -98,52 +100,73 @@ The runtime context variables for this enabler are classified into 4 categories:
 
 ***A. Operations-related***
 
-Variable Name|Value|Type|Description|Export|Auto Increment
+Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
-USE_SUDO|false|Environment|Run Docker with sudo. The sudo must not prompt for password!|false|None
-JDK_NAME|j2sdk|String|The name of the required JDK|false|None
-JDK_VERSION|1.7|String|The version of the required JDK|false|None
-JAVA_HOME|${GRIDLIB_JAVA_HOME}|Environment|The Java home directory|false|None
-DELETE_RUNTIME_DIR_ON_SHUTDOWN|true|Environment|Whether to delete the Docker runtime directory on shutdown. This includes removing the Docker container.|false|None
-DOCKER_BASE_DIR|${container.getWorkDir()}/docker|Environment|Base parent dir containing Dockerfile build context dir, logs dir and stats dir|false|None
-DOCKER_CONTEXT_DIR|${DOCKER_BASE_DIR}/docker_context|Environment|Dir containing the Dockerfile and associated dirs and files to be used in image build.|false|None
-DOCKER_LOGS_DIR|${DOCKER_BASE_DIR}/docker_logs|Environment|Host dir mounted for dumping any logs data from within Docker containers|false|None
-DOCKER_STATS_DIR|${DOCKER_BASE_DIR}/docker_stats|Environment|Host dir mounted for dumping any stats data from within Docker containers|false|None
-DOCKER_ENVS_DIR|${DOCKER_BASE_DIR}/docker_envs|Environment|Host dir where environment properties files for container are located|false|None
-HTTP_PORT|9090|Environment|HTTP listen port|false|Numeric
-HTTPS_PORT|9443|Environment|HTTPS listen port|false|Numeric
+**USE_SUDO**|false|Environment|Run Docker with sudo. The sudo must not prompt for password!|false|None
+**JDK_NAME**|j2sdk|String|The name of the required JDK|false|None
+**JDK_VERSION**|1.7|String|The version of the required JDK|false|None
+**JAVA_HOME**|${GRIDLIB_JAVA_HOME}|Environment|The Java home directory|false|None
+**DELETE_RUNTIME_DIR_ON_SHUTDOWN**|true|Environment|Whether to delete the Docker runtime directory on shutdown. This includes removing the Docker container.|false|None
+**DOCKER_BASE_DIR**|${container.getWorkDir()}/docker|Environment|Base parent dir containing Dockerfile build context dir, logs dir and stats dir|false|None
+**DOCKER_CONTEXT_DIR**|${DOCKER_BASE_DIR}/docker_context|Environment|Dir containing the Dockerfile and associated dirs and files to be used in image build.|false|None
+**DOCKER_LOGS_DIR**|${DOCKER_BASE_DIR}/docker_logs|Environment|Host dir mounted for dumping any logs data from within Docker containers|false|None
+**DOCKER_STATS_DIR**|${DOCKER_BASE_DIR}/docker_stats|Environment|Host dir mounted for dumping any stats data from within Docker containers|false|None
+**DOCKER_ENVS_DIR**|${DOCKER_BASE_DIR}/docker_envs|Environment|Host dir where environment properties files for container are located|false|None
+**HTTP_PORT**|9090|Environment|HTTP listen port|false|Numeric
+**HTTPS_PORT**|9443|Environment|HTTPS listen port|false|Numeric
 
 ***B. Dockerfile build-related***
 
-Variable Name|Value|Type|Description|Export|Auto Increment
+Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
-DOCKER_IMAGE_NAME|joe/app|Environment|Docker image name to generate or use for container creation. ex. 'joe/archiva:211'|false|None
-BUILD_ALWAYS|false|String|Always attempt a Dockerfile build first before running a container.|false|None
-REUSE_IMAGE|true|String|Skip build and reuse image if it already exist.|false|None
-BUILD_VERBOSE|true|String|Emit verbose build steps when building image.|false|None
-USE_CACHE|true|String|Use existing build cache to speed up build|false|None
-REMOVE_SUCCESS|true|String|Only remove any build intermediate containers if final build is successful.|false|None
-REMOVE_ALWAYS|false|String|Always remove any build intermediate containers, even if final build failed.|false|None
-BUILD_TIMEOUT|200|String|Max number of secs before build is terminated and failed.|false|None
+**DOCKER_IMAGE_NAME**|joe/app|Environment|Docker image name to generate or use for container creation. ex. 'joe/archiva:211'|false|None
+**BUILD_ALWAYS**|false|String|Always attempt a Dockerfile build first before running a container.|false|None
+**REUSE_IMAGE**|true|String|Skip build and reuse image if it already exist.|false|None
+**BUILD_VERBOSE**|true|String|Emit verbose build steps when building image.|false|None
+**USE_CACHE**|true|String|Use existing build cache to speed up build|false|None
+**REMOVE_SUCCESS**|true|String|Only remove any build intermediate containers if final build is successful.|false|None
+**REMOVE_ALWAYS**|false|String|Always remove any build intermediate containers, even if final build failed.|false|None
+**BUILD_TIMEOUT**|200|String|Max number of secs before build is terminated and failed.|false|None
 
 ***C. Docker container-related***
 
-Variable Name|Value|Type|Description|Export|Auto Increment
+Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
-DOCKER_CONTAINER_NAME|my_container|Environment|Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc|false|Append
-REUSE_CONTAINER|false|String|Reuse existing same named container instead of creating a new one|false|None
-PRIVILEDGED_MODE|false|String|Set the container to run in privileged mode|false|None
-CMD_OVERRIDE||Environment|Command executable (and any of its arguments) to run in a container that result in a foreground process. Note: If the image also specifies an 'ENTRYPOINT' then this get appended as arguments to the ENTRYPOINT.|false|None
-ENTRY_POINT_OVERRIDE||String|Overrides default executable(usually '/bin/bash') to run when container starts up. Use this in conjunction with 'CMD_OVERRIDE'|false|None
-USER_OVERRIDE||String|Overrides default user('root', uid=0) within a container when it starts up. Use Username or UID|false|None
-WORKDIR_OVERRIDE||String|Overrides default working dir inside Docker container|false|None
-!ENV_FILE_Default|${DOCKER_ENVS_DIR}/envs.properties|String|An properties file containing environment variables to be injected into container. This may override some or all 'ENV' already set in the image|false|None
-MEMORY_LIMIT|256m|String|Upper limit to container RAM memory in the format NNNx where NNN is an integer and x is the unit(b,k,m, or g). ex. 256m|false|None
-MAX_STOP_TIME_BEFORE_KILL|30|Environment|Maxiumum secs to wait before a force stop is used to shutdown a Docker container|false|None
-CID_FILE|${DOCKER_BASE_DIR}/${DOCKER_CONTAINER_NAME}.cid|Environment|A file that is created when a Docker container is created and run.|false|None
-BIND_ON_ALL_LOCAL_ADDRESSES|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
-LISTEN_ADDRESS_NET_MASK||Environment|A comma delimited list of net masks in CIDR notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
+**DOCKER_CONTAINER_NAME**|my_container|Environment|Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc|false|Append
+**REUSE_CONTAINER**|false|String|Reuse existing same named container instead of creating a new one|false|None
+**PRIVILEDGED_MODE**|false|String|Set the container to run in privileged mode|false|None
+**CMD_OVERRIDE**||Environment|Command executable (and any of its arguments) to run in a container that result in a foreground process. Note: If the image also specifies an 'ENTRYPOINT' then this get appended as arguments to the ENTRYPOINT.|false|None
+**ENTRY_POINT_OVERRIDE**||String|Overrides default executable(usually '/bin/bash') to run when container starts up. Use this in conjunction with 'CMD_OVERRIDE'|false|None
+**USER_OVERRIDE**||String|Overrides default user('root', uid=0) within a container when it starts up. Use Username or UID|false|None
+**WORKDIR_OVERRIDE**||String|Overrides default working dir inside Docker container|false|None
+**!ENV_FILE_Default**|${DOCKER_ENVS_DIR}/envs.properties|String|An properties file containing environment variables to be injected into container. This may override some or all 'ENV' already set in the image|false|None
+**MEMORY_LIMIT**|256m|String|Upper limit to container RAM memory in the format NNNx where NNN is an integer and x is the unit(b,k,m, or g). ex. 256m|false|None
+**MAX_STOP_TIME_BEFORE_KILL**|30|Environment|Maxiumum secs to wait before a force stop is used to shutdown a Docker container|false|None
+**CID_FILE**|${DOCKER_BASE_DIR}/${DOCKER_CONTAINER_NAME}.cid|Environment|A file that is created when a Docker container is created and run.|false|None
+**BIND_ON_ALL_LOCAL_ADDRESSES**|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
+**LISTEN_ADDRESS_NET_MASK**||Environment|A comma delimited list of net masks in CIDR notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
 
+Configuring Silver Fabric Engine Resource Preference
+-----------------------------------------------------
+
+Since not all Silver Fabric daemon engine hosts(physical or virtual) are Docker-enabled, a [Resource Preference rule] needs to be set when configuring a Silver Fabric component from this enabler.
+This allows Silver Fabric Broker to deploy component to the right engine hosts that are Docker-enabled; otherwise the component deployment will fail.
+
+Special runtime context variable name directives
+------------------------------------------------
+
+Runtime context variables names that are prefixed with [Special directives] allow them to be treated differently.
+
+Prefix directive|Purpose|Variable name syntax|Variable value
+---|---|---|---
+**!PORT_MAP_** | Map an external host port to an internally exposed Docker container port|!PORT_MAP_xxxx|\<external port\>:\<internal port\>
+**!VOL_MAP_**| Mount an external host volume to an internal Docker container volume|!VOL_MAP_xxxx|\<external volume path\>:\<internal volume path\>:[rw,ro]
+**!ENV_VAR_**| Inject an environment variable into the Docker container|!ENV_VAR_xxxx|key=value, key=, key
+**!ENV_FILE_**| Inject a list of environment variables specified as `key=value` pairs from a file into the Docker container|!ENV_FILE_xxxx|\<path to a file\>
+
+Silver Fabric Engine activation info from Docker container
+----------------------------------------------------------
+[Container-related metadata] info are collected as activation info by the engine that proxy the lifecycle of the associated Docker it manages. They are prefixed by **docker_**.
 
 How Tos
 -------
@@ -209,4 +232,9 @@ How Tos
 [Password-less sudo]:https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access
 [Configure Docker Remote API]:http://www.virtuallyghetto.com/2014/07/quick-tip-how-to-enable-docker-remote-api.html
 [docker logs]:https://docs.docker.com/reference/commandline/cli/#logs
+[Resource Preference rule]:https://raw.githubusercontent.com/fabrician/docker-enabler/master/src/main/resources/images/docker_resource_preference.gif?token=3927123__eyJzY29wZSI6IlJhd0Jsb2I6ZmFicmljaWFuL2RvY2tlci1lbmFibGVyL21hc3Rlci9zcmMvbWFpbi9yZXNvdXJjZXMvaW1hZ2VzL2RvY2tlcl9yZXNvdXJjZV9wcmVmZXJlbmNlLmdpZiIsImV4cGlyZXMiOjE0MTQwOTcyNzZ9--64b834ab47f3c8ad295791d3d0e21d307aebec15
+
+[Special directives]:https://raw.githubusercontent.com/fabrician/docker-enabler/master/src/main/resources/images/docker_runtime_context_vars.gif?token=3927123__eyJzY29wZSI6IlJhd0Jsb2I6ZmFicmljaWFuL2RvY2tlci1lbmFibGVyL21hc3Rlci9zcmMvbWFpbi9yZXNvdXJjZXMvaW1hZ2VzL2RvY2tlcl9ydW50aW1lX2NvbnRleHRfdmFycy5naWYiLCJleHBpcmVzIjoxNDE0MTAxMTE3fQ%3D%3D--ceccc95a0b64f88fc0c0e34039d4a6222d2061c2
+
+[Container-related metadata]:https://raw.githubusercontent.com/fabrician/docker-enabler/master/src/main/resources/images/docker_enabler_activationInfo.gif?token=3927123__eyJzY29wZSI6IlJhd0Jsb2I6ZmFicmljaWFuL2RvY2tlci1lbmFibGVyL21hc3Rlci9zcmMvbWFpbi9yZXNvdXJjZXMvaW1hZ2VzL2RvY2tlcl9lbmFibGVyX2FjdGl2YXRpb25JbmZvLmdpZiIsImV4cGlyZXMiOjE0MTQxMTA1MTF9--39c9c921946525e0751d98494508b4e9dda263c4
 
