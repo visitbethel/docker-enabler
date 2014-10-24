@@ -186,7 +186,7 @@
             <property name="value" value="my_container"/>
             <property name="type" value="Environment"/>
             <property name="autoIncrementType" value="Append"/>
-            <property name="description" value="Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc. "/>
+            <property name="description" value="Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc. Leave this blank if you want unique name auto-generated."/>
         </variable>
         <variable class="RuntimeContextVariable">
             <property name="name" value="REUSE_CONTAINER"/>

@@ -18,18 +18,10 @@ import com.google.common.base.Optional;
  * 
  */
 public class DockerActivationInfo {
-    public enum Entry{
-        docker_name,
-        docker_id,
-        docker_created,
-        docker_image,
-        docker_state,
-        docker_host_config,
-        docker_config,
-        docker_networks,
-        docker_volumes,
-        docker_vol_rw;
+    public enum Entry {
+        docker_name, docker_id, docker_created, docker_image, docker_state, docker_status, docker_host_config, docker_config, docker_networks, docker_volumes, docker_vol_rw;
     }
+
     private final ActivationInfo info;
     private final Container docker;
 
@@ -47,24 +39,25 @@ public class DockerActivationInfo {
         info.setProperty(Entry.docker_id.name(), docker.getId());
         info.setProperty(Entry.docker_created.name(), docker.getCreated());
         info.setProperty(Entry.docker_image.name(), docker.getImage());
-        info.setProperty(Entry.docker_config.name(), StringUtils.substringAfter(docker.getContainerConfig().toString(),"Config"));
-        info.setProperty(Entry.docker_state.name(), StringUtils.substringAfter(docker.getState().toString(),"State"));
-        info.setProperty(Entry.docker_host_config.name(),  StringUtils.substringAfter(docker.getHostConfig().toString(),"HostConfig"));
-        info.setProperty(Entry.docker_networks.name(),  StringUtils.substringAfter(docker.getNetworkSettings().toString(),"NetworkSettings"));
+        info.setProperty(Entry.docker_config.name(), StringUtils.substringAfter(docker.getContainerConfig().toString(), "Config"));
+        info.setProperty(Entry.docker_state.name(), StringUtils.substringAfter(docker.getState().toString(), "State"));
+        info.setProperty(Entry.docker_status.name(), "Up " + TimeUtil.formatDurationMsg(docker.getState().getStartedAt()));
+        info.setProperty(Entry.docker_host_config.name(), StringUtils.substringAfter(docker.getHostConfig().toString(), "HostConfig"));
+        info.setProperty(Entry.docker_networks.name(), StringUtils.substringAfter(docker.getNetworkSettings().toString(), "NetworkSettings"));
         info.setProperty(Entry.docker_volumes.name(), docker.getVolumes().toString());
         info.setProperty(Entry.docker_vol_rw.name(), docker.getvolumesRW().toString());
         return this;
     }
 
-    public Optional<String> getDockerProperty(Entry entry){
+    public Optional<String> getDockerProperty(Entry entry) {
         return Optional.fromNullable(info.getProperty(entry.name()));
     }
-    
+
     public static DockerActivationInfo inject(final ActivationInfo info, final String containerIdentity, final DockerClient client) {
         Optional<Container> c = client.inspectContainer(containerIdentity);
         if (c.isPresent()) {
             DockerActivationInfo.instance(info, c.get()).inject();
         }
-        return DockerActivationInfo.instance(info,null);
+        return DockerActivationInfo.instance(info, null);
     }
 }
