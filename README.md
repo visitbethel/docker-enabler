@@ -129,7 +129,7 @@ docker logs <container name >
 ```
 and copy the log to **DOCKER_LOGS_DIR**
 
-**Note**: 
+***Note***: 
 There are a few operational issues with this currently as it is quite primitive:
 This log file grows indefinitely. Docker logs each line as a JSON message which can cause this file to grow quickly and exceed the disk space on the host since it’s not rotated automatically.
 The docker logs command returns all recorded logs each time it’s run. Any long running process that is a little verbose can be difficult to examine. Logs under the containers `/var/log` or other locations are not easily visible or accessible.
@@ -138,14 +138,18 @@ Also each call to `docker logs` command retrieves the whole log!
 
 Post-activation auxiliary process injection
 ----------------------------------------------------
-Prior to Docker 1.3.0, a foreground process is required to run inside a Docker container to keep the container running. We call this the `primary process` of the container. It is not possible to start any background process first, followed lastly by a primary process.
-With Docker 1.3.0, it is possible to inject one or more auxialiry processes into the Docker container once its in running state(i.e. activated). This allows the possiblity of auxiliary "helper" processes. This could be used, for example, logging, statistics-collections or any additional processing, augmenting the primary process.
+Prior to `Docker 1.3.0`, a `foreground process` is required to run inside a Docker container to keep the container running. We call this the `primary process` of the container. It is not possible to start any background process first, followed lastly by a primary process.
+With `Docker 1.3.0`, it is possible to inject one or more auxialiry processes into the Docker container once its in running state(i.e. activated). This allows the possiblity of auxiliary "helper" processes. This could be used, for example, logging, statistics-collections or any additional processing, augmenting the primary process.
 
-You can specify an ordered list of auxiliary processes to be injected into the activated Docker container by editing the [post_activations.cmds] specified by the runtime context variable **EXEC_CMD_FILE**.
+You can specify an ordered list of auxiliary processes to be injected into the activated Docker container by editing the [post_activations.cmds] specified by the runtime context variable **EXEC_CMD_FILE** with delay between process injections in seconds dictated by the runtime context variable **EXEC_CMD_DELAY**.
+
+***Note***:
+If any process injection failed, an exception is thrown and remaining injections discarded but the `primary process` still runs.
 
 Exporting Runtime Context Variables - `linking` ala Silver Fabric
 --------------------------------------------------------------------
-TODO
+As aforementioned, this enabler uses Silver Fabric's runtime context variables exports to replace `linking' and 'volumes-from'. We briefly describes here how it works in the big picture.
+
 
 Runtime Context Variables
 --------------------------------------
