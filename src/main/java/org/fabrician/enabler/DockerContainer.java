@@ -24,6 +24,7 @@ import org.fabrician.enabler.util.BuildCmdOptions;
 import org.fabrician.enabler.util.DockerActivationInfo;
 import org.fabrician.enabler.util.DockerActivationInfo.Entry;
 import org.fabrician.enabler.util.DockerfileBuildLock;
+import org.fabrician.enabler.util.ExecCmdProcessInjector;
 import org.fabrician.enabler.util.RunCmdAuxiliaryOptions;
 
 import com.datasynapse.fabric.common.ActivationInfo;
@@ -35,10 +36,15 @@ import com.datasynapse.fabric.domain.featureinfo.HttpFeatureInfo;
 import com.datasynapse.fabric.util.ContainerUtils;
 import com.datasynapse.fabric.util.DynamicVarsUtils;
 import com.datasynapse.gridserver.engine.EngineProperties;
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+import com.google.common.io.BaseEncoding;
 
 /**
  * A Silver Fabric Docker container proxy.
@@ -55,14 +61,23 @@ public class DockerContainer extends ExecContainer {
     private static final String DOCKER_CONTAINER_TAG_VAR = "DOCKER_CONTAINER_TAG";
     private static final String USE_SUDO_VAR = "USE_SUDO";
     private static final String REUSE_CONTAINER_VAR = "REUSE_CONTAINER";
+
     private static final String PORT_MAP_PREFIX = "!PORT_MAP_"; // all context vars that starts with "!PORT_MAP_" are reckoned to be a host-to-container ports mapping by convention
     private static final String VOL_MAP_PREFIX = "!VOL_MAP_"; // all context vars that starts with "!VOL_MAP_" are reckoned to be a host-to-container volume mapping by convention
     private static final String ENV_VAR_PREFIX = "!ENV_VAR_";// all context vars that starts with "!ENV_VAR" are reckoned to be container enviromental variables mapping by convention
     private static final String ENV_FILE_PREFIX = "!ENV_FILE_";// all context vars that starts with "!ENV_FILE_" are reckoned to be container enviromental variables mapping by convention
+    private static final String SECURITY_OPTION_PREFIX = "!SEC_OPT_";// all context vars that starts with "!SEC_OPT_" are reckoned to be container security options by convention
+
+    private static final String EXEC_CMD_FILE_VAR = "EXEC_CMD_FILE";
+    private static final String EXEC_CMD_DELAY_VAR = "EXEC_CMD_DELAY";
+    private static final String EXEC_CMD_ENABLED_VAR = "EXEC_CMD_ENABLED";
+
     private static final String DOCKER_PORT_MAPPINGS_VAR = "DOCKER_PORT_MAPPINGS";
     private static final String DOCKER_VOL_MAPPINGS_VAR = "DOCKER_VOL_MAPPINGS";
     private static final String DOCKER_ENVS_VAR = "DOCKER_ENVS";
     private static final String DOCKER_AUXILIARY_OPTIONS_VAR = "DOCKER_AUXILIARY_OPTIONS";
+    private static final String DOCKER_SECURITY_OPTIONS_VAR = "DOCKER_SECURITY_OPTS";
+
     // build
     private static final String DOCKER_CONTEXT_DIR_VAR = "DOCKER_CONTEXT_DIR";
     private static final String DOCKER_IMAGE_NAME_VAR = "DOCKER_IMAGE_NAME";
@@ -147,6 +162,8 @@ public class DockerContainer extends ExecContainer {
         buildDockerContainerEnvs(additionalVariables);
         // construct other options not related to env,ports or volumes
         buildDockerContainerAuxiliaryOptions(additionalVariables);
+        // construct security options
+        buildDockerContainerSecurityOptions(additionalVariables);
         super.doInit(additionalVariables);
         getEngineLogger().fine("Invoked doInit()...");
     }
@@ -240,6 +257,25 @@ public class DockerContainer extends ExecContainer {
         additionalVariables.add(new RuntimeContextVariable(DOCKER_AUXILIARY_OPTIONS_VAR, options, RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
+    private void buildDockerContainerSecurityOptions(List<RuntimeContextVariable> additionalVariables) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < getRuntimeContext().getVariableCount(); i++) {
+            RuntimeContextVariable var = getRuntimeContext().getVariable(i);
+            if (var.getTypeInt() != RuntimeContextVariable.OBJECT_TYPE) {
+                String name = var.getName();
+                if (!name.startsWith(SECURITY_OPTION_PREFIX)) {
+                    continue;
+                }
+                String currentValue = StringUtils.trimToEmpty((String) var.getValue());
+                if (currentValue.isEmpty()) {
+                    continue;
+                }
+                sb.append(" --security-opt ").append(currentValue);
+            }
+        }
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_SECURITY_OPTIONS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
+    }
+
     @Override
     protected void doStart() throws Exception {
         // run the Docker container here
@@ -265,6 +301,8 @@ public class DockerContainer extends ExecContainer {
         super.doInstall(info);
         // log the docker inspect container to the engine logger
         logDockerInspectMetadata(dockerContainerId);
+        // inject helper processes into activated parent Docker container
+        injectDockerHelperProcesses();
         getEngineLogger().fine("doInstall() invoked");
     }
 
@@ -273,7 +311,7 @@ public class DockerContainer extends ExecContainer {
         getEngineLogger().info(Strings.repeat("-", 10) + "inspect metadata for [" + dockerContainerId + "]" + Strings.repeat("-", 10));
         String command = "docker inspect " + dockerContainerId;
         if (useSudo) {
-            command += "sudo ";
+            command = "sudo " + command;
         }
         File workDir = new File(getWorkDir());
         ProcessWrapper p = null;
@@ -295,7 +333,39 @@ public class DockerContainer extends ExecContainer {
                 }
             }
         } catch (Exception ex) {
-            getEngineLogger().log(Level.SEVERE, "while inspecting docker container [" + getName() + "]", ex);
+            getEngineLogger().log(Level.SEVERE, "while inspecting docker container [" + dockerContainerId + "]", ex);
+        }
+    }
+
+    private void injectDockerHelperProcesses() throws Exception {
+        getEngineLogger().info(Strings.repeat("-", 10) + "injecting post-activation helper processes into docker container [" + dockerContainerId + "]" + Strings.repeat("-", 10));
+        boolean inject = resolveToBoolean(EXEC_CMD_ENABLED_VAR);
+        if (inject) {
+            File cmdFile = resolveToFile(EXEC_CMD_FILE_VAR);
+            Validate.isTrue(cmdFile.exists(), "The command file for 'docker exec' use does not exist at path [" + cmdFile.getCanonicalPath() + "]");
+            int delay = resolveToInteger(EXEC_CMD_DELAY_VAR);
+            ExecCmdProcessInjector.exec(this, cmdFile.toURI().toURL(), delay);
+        } else {
+            getEngineLogger().info("Skipping 'docker exec' since " + EXEC_CMD_ENABLED_VAR + " is disabled.");
+        }
+    }
+
+    public ProcessWrapper getExecCmdProcessWrapper(String execCmd) throws Exception {
+        String command = "docker exec -d " + dockerContainerTag + " " + execCmd;
+        if (useSudo) {
+            command = "sudo " + command;
+        }
+        File workDir = new File(getWorkDir());
+        HashFunction hf = Hashing.md5();
+        HashCode hc = hf.newHasher().putString(command, Charsets.UTF_8).hash();
+        String cmd_pid = "_cmd_" + BaseEncoding.base64Url().encode(hc.asBytes()) + ".pid";
+        try {
+            String engineOS = getEngineProperty(EngineProperties.OS);
+            ProcessWrapper p = getProcessWrapper(command, workDir, engineOS + cmd_pid);
+            return p;
+        } catch (Exception ex) {
+            getEngineLogger().log(Level.SEVERE, "while getting a process wrapper for 'docker exec' command [" + execCmd + "]", ex);
+            throw ex;
         }
     }
 
@@ -323,7 +393,7 @@ public class DockerContainer extends ExecContainer {
         // construct build options
         String command = "docker build " + BuildCmdOptions.buildAll(getRuntimeContext()) + " -t " + dockerImage + " . ";
         if (useSudo) {
-            command += "sudo ";
+            command = "sudo " + command;
         }
         getEngineLogger().info(Strings.repeat("-", 10) + " begin build command " + Strings.repeat("-", 10));
         getEngineLogger().info(command);
@@ -461,7 +531,7 @@ public class DockerContainer extends ExecContainer {
 
     private String getEngineUsername() throws Exception {
         String username = getEngineProperty(EngineProperties.USERNAME);
-        username=StringUtils.replaceChars(username,'-', '_');
+        username = StringUtils.replaceChars(username, '-', '_');
         return username;
     }
 
@@ -472,7 +542,7 @@ public class DockerContainer extends ExecContainer {
             Joiner joiner = Joiner.on("_").skipNulls();
             componentName = joiner.join(parts);
         }
-        componentName=StringUtils.replaceChars(componentName,'-','_');
+        componentName = StringUtils.replaceChars(componentName, '-', '_');
         return componentName;
     }
 
@@ -518,7 +588,7 @@ public class DockerContainer extends ExecContainer {
         return new File(val).getCanonicalFile();
     }
 
-    private void validateHttpFeature() throws Exception{
+    private void validateHttpFeature() throws Exception {
         httpFeatureInfo = (HttpFeatureInfo) ContainerUtils.getFeatureInfo(Feature.HTTP_FEATURE_NAME, this, getCurrentDomain());
 
         boolean httpEnabled = isHttpEnabled();
@@ -534,7 +604,7 @@ public class DockerContainer extends ExecContainer {
         }
 
     }
-    
+
     Logger logger() {
         return getEngineLogger();
     }
@@ -543,15 +613,15 @@ public class DockerContainer extends ExecContainer {
         return this.dockerClient;
     }
 
-    String dockerContainerId() {
+    public String dockerContainerId() {
         return this.dockerContainerId;
     }
 
-    String dockerContainerName() {
+    public String dockerContainerName() {
         return this.dockerContainerTag;
     }
 
-    String dockerContainerInfo() {
+    public String dockerContainerInfo() {
         return "[" + dockerContainerName() + "][" + dockerContainerId() + "]";
     }
 

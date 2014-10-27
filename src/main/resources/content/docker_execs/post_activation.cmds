@@ -1,4 +1,3 @@
-#!/bin/bash
 # Copyright (c) 2014 TIBCO Software Inc. 
 # All Rights Reserved. 
 #
@@ -23,16 +22,19 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-env
-echo "Running $DOCKER_CONTAINER_NAME"
-start_cmd="docker run $DOCKER_ENVS $DOCKER_PORT_MAPPINGS $DOCKER_VOL_MAPPINGS $DOCKER_AUXILIARY_OPTIONS $DOCKER_SECURITY_OPTS --name $DOCKER_CONTAINER_TAG $DOCKER_IMAGE_NAME $CMD_OVERRIDE"
-cmd=
-if [ "$USE_SUDO" == "true" ]; then
-  cmd="sudo $start_cmd"
-else
-  cmd="$start_cmd"
-fi
-echo "--------------------------------------------------------------"
-echo "$cmd"
-echo "--------------------------------------------------------------"
-echo $($cmd)
+#
+# This file is used to inject additional helper processes into a Docker container after it has been activated(started).
+# Each valid non-empty line that is not a comment line is reckoned to be a valid command that will be inject into the running container
+# This file will also be subjected to runtime context variables substitution before being read for execution in order; line by line
+# The syntax of the command must be as follows
+#
+# COMMAND [ARGS]
+#
+# Important: [ARGS] must be valid argument(s) to the executable COMMAND
+#
+# Example1:    ping 127.0.0.1 -t 5 // works
+# Example2:    ping 127.0.0.1 -t 5 > test1.log   // will not work because '>' is not a valid argument for the executable 'ping'
+# Example2:    logsave {DOCKER_LOGS_DIR}/ping.log ping 127.0.0.1 -t 5 // works and '{DOCKER_LOGS_DIR}' be substituted if DOCKER_LOGS_DIR defined as a runtime context variable
+#
+
+

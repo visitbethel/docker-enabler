@@ -3,6 +3,9 @@
     Note: The <velocity> tag will make this file go through Velocity substitution.
     If the contents of file context.xml contains any placeholders in format "${SOME_VARIABLE}", they will all be replaced by the runtime value of Runtime Context Variable named "SOME_VARIABLE" defined or derived by the running Container. If "SOME_VARIABLE" is not defined or derived by the running Container then the placeholder "${SOME_VARIABLE}" will remain as is in the specified file.
     -->
+    <configFiles baseDir="${DOCKER_EXECS_DIR}" include="post_activation.cmds">
+		<velocity/>
+	</configFiles>
     <configFiles baseDir="${DOCKER_ENVS_DIR}" include="envs.properties">
 		<velocity/>
 	</configFiles>

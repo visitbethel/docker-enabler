@@ -112,6 +112,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **DOCKER_LOGS_DIR**|${DOCKER_BASE_DIR}/docker_logs|Environment|Host dir mounted for dumping any logs data from within Docker containers|false|None
 **DOCKER_STATS_DIR**|${DOCKER_BASE_DIR}/docker_stats|Environment|Host dir mounted for dumping any stats data from within Docker containers|false|None
 **DOCKER_ENVS_DIR**|${DOCKER_BASE_DIR}/docker_envs|Environment|Host dir where environment properties files for container are located|false|None
+**DOCKER_EXECS_DIR**|${DOCKER_BASE_DIR}/docker_exec|Environment|Host dir where Docker container post-activation helper process-injection commands are located. (Valid for Docker >=1.3.0 only)|false|None
 **HTTP_PORT**|9090|Environment|HTTP listen port|false|Numeric
 **HTTPS_PORT**|9443|Environment|HTTPS listen port|false|Numeric
 
@@ -132,7 +133,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
-**DOCKER_CONTAINER_NAME**|my_container|Environment|Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc|false|Append
+**DOCKER_CONTAINER_NAME**||String|Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc. Leave this blank if you want unique name auto-generated.|false|Append
 **REUSE_CONTAINER**|false|String|Reuse existing same named container instead of creating a new one|false|None
 **PRIVILEDGED_MODE**|false|String|Set the container to run in privileged mode|false|None
 **CMD_OVERRIDE**||Environment|Command executable (and any of its arguments) to run in a container that result in a foreground process. Note: If the image also specifies an 'ENTRYPOINT' then this get appended as arguments to the ENTRYPOINT.|false|None
@@ -146,11 +147,23 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **BIND_ON_ALL_LOCAL_ADDRESSES**|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
 **LISTEN_ADDRESS_NET_MASK**||Environment|A comma delimited list of net masks in CIDR notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
 
+***D. Docker container post-activation auxiliary processes injections
+
+Variable Name|Default value|Type|Description|Export|Auto Increment
+---|---|---|---|---|---
+**EXEC_CMD_ENABLED**|false|String|Run a sequence of commands for Docker container post-activation helper process-injections. (Valid for Docker >=1.3.0 only)|false|None
+**EXEC_CMD_FILE**|${DOCKER_EXECS_DIR}/post_activation.cmds|String|A file containing a sequence of commands for Docker container post-activation helper process-injections. (Valid for Docker >=1.3.0 only)|false|None
+**EXEC_CMD_DELAY**|1|String|Delay in seconds in-between injecting a sequence of processes specified in 'EXEC_CMD_FILE'. (Valid for Docker >=1.3.0 only)|false|None
+
+
 Configuring Silver Fabric Engine Resource Preference
 -----------------------------------------------------
 
-Since not all Silver Fabric daemon engine hosts(physical or virtual) are Docker-enabled, a [Resource Preference rule] needs to be set when configuring a Silver Fabric component from this enabler.
+Since not all Silver Fabric daemon engine hosts(physical or virtual) are Docker-enabled, a [Resource Preference rule] needs to be set when configuring a Silver Fabric component from this enabler using **Docker Enabled** engine property.
 This allows Silver Fabric Broker to deploy component to the right engine hosts that are Docker-enabled; otherwise the component deployment will fail.
+
+In addition, you can also use the **Docker VersionInfo** engine property to run on certain Docker version only.
+
 
 Special runtime context variable name directives
 ------------------------------------------------

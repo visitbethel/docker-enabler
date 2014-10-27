@@ -91,5 +91,12 @@
 				<include>*.properties</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/content/docker_execs</directory>
+			<outputDirectory>content/docker/docker_execs</outputDirectory>
+			<includes>
+				<include>*.cmds</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 </assembly>
