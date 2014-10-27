@@ -194,7 +194,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **MAX_STOP_TIME_BEFORE_KILL**|30|Environment|Maxiumum secs to wait before a force stop is used to shutdown a Docker container|false|None
 **CID_FILE**|${DOCKER_BASE_DIR}/${DOCKER_CONTAINER_NAME}.cid|Environment|A file that is created when a Docker container is created and run.|false|None
 **BIND_ON_ALL_LOCAL_ADDRESSES**|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
-**LISTEN_ADDRESS_NET_MASK**||Environment|A comma delimited list of net masks in CIDR notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
+**LISTEN_ADDRESS_NET_MASK**||Environment|A comma delimited list of net masks in `CIDR` notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
 
 ***D. Docker container post-activation auxiliary processes injections***
 
@@ -221,11 +221,11 @@ Runtime context variables names that are prefixed with [Special directives] allo
 
 Prefix directive|Purpose|Variable name syntax|Variable value
 ---|---|---|---
-**!PORT_MAP_** | Map an external host port to an internally exposed Docker container port|!PORT_MAP_xxxx|\<external port\>:\<internal port\>
-**!VOL_MAP_**| Mount an external host volume to an internal Docker container volume|!VOL_MAP_xxxx|\<external volume path\>:\<internal volume path\>:[rw,ro]
-**!ENV_VAR_**| Inject an environment variable into the Docker container|!ENV_VAR_xxxx|key=value, key=, key
-**!ENV_FILE_**| Inject a list of environment variables specified as `key=value` pairs from a file into the Docker container|!ENV_FILE_xxxx|\<path to a file\>
-**!SEC_OPT_**| Specify a Docker conatiner security option(Valid only for Docker \>= 1.3.0)|!SEC_OPT_xxxx|One or more from the list [ label\:user\:\<**USER**\>, label\:role\:\<**ROLE**\>, label\:type\:\<**TYPE**\>, label\:level:\<**LEVEL**\>, label:disable,apparmor\:\<**PROFILE**\>]
+**!PORT_MAP_** | Map an external host port to an internally exposed Docker container port|`!PORT_MAP_`xxxx|\<`external port`\>:\<`internal port`\>
+**!VOL_MAP_**| Mount an external host volume to an internal Docker container volume|`!VOL_MAP_`xxxx|\<`external volume path`\>:\<`internal volume path`\>:[`rw`,`ro`]
+**!ENV_VAR_**| Inject an environment variable into the Docker container|`!ENV_VAR_`xxxx|`key=value`, `key=`, `key`
+**!ENV_FILE_**| Inject a list of environment variables specified as `key=value` pairs from a file into the Docker container|`!ENV_FILE_`xxxx|\<`path to a file`\>
+**!SEC_OPT_**| Specify a Docker conatiner security option(Valid only for Docker \>= 1.3.0)|`!SEC_OPT_`xxxx|One or more from the list [ `label:user:`\<**USER**\>, `label:role:`\<**ROLE**\>, `label:type:`\<**TYPE**\>, `label:level:`\<**LEVEL**\>, `label:disable`,`apparmor:`\<**PROFILE**\>]
 
 Silver Fabric Engine activation info from Docker container
 ----------------------------------------------------------
@@ -287,6 +287,7 @@ How Tos
   
   Example: "DOCKER_IMAGE_NAME=bbrets/tomcat:6.0.36"
 
+Note: If you are using `COPY` or `ADD` commands in the Dockerfile, you can add the files to be copied/added in those commands as content files in the same relative content dir above.
 ```
 
 
