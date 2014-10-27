@@ -71,22 +71,22 @@ This allows application process from both types of packaging to mix and interact
 While Docker container advocate single process ala `microservice`, on the otherhand, Silver Fabric `gridlib` allows for more complex traditional application. 
 So they can both be used in a complementary way.
 
-We also do not support Docker **--link** and **--volumes-from** features to allow instead the use of Silver Fabric's component dependency management to be used to link running processes across different hosts by exporting runtime context variables. For example, a Docker container running on host A could be "linked" to a Silver Fabric grid lib application process running on host by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only.
+We also do not support Docker `--link` and `--volumes-from` features to allow instead the use of Silver Fabric's component dependency management to be used to link running processes across different hosts by exporting runtime context variables. For example, a Docker container running on host A could be "linked" to a Silver Fabric grid lib application process running on host by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only.
 
 Statistics
 --------------------------------------
 There are 2 kinds of statistics related to a running Docker container:
-### Application-level statistics
+### Application-level statistics###
 * This are often read via some standard mechanism like **JMX** or just log to files.
 If you log to files within the container , you can mount a host "stats volume" using the runtime context variable **DOCKER_STATS_DIR** to the stats volume directory within the container.
 
-### Container-level statistics
+### Container-level statistics###
 * At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API, nor are the container statistics that useful at the moment from the application perspective.
 
 There are a number of OSS hacks out there but lack of an API means its liable to be broken with Docker runtime evolving. So use it at your own risks.
 
-Regardless of Application-level or Container-level statistics, you can use Silver Fabric's **statistics scripting support** to gather statistics of interest by using **Jython**, **JRuby** or **ECMAScript**.
-The script can be used to call **URLs**(JMX, JDBC, HTTP,etc) support by the application running within container or simply read host-to-docker container mounted volumes files located at **DOCKER_STATS_DIR**
+Regardless of Application-level or Container-level statistics, you can use Silver Fabric's **statistics scripting support** to gather statistics of interest by using `Jython`, `JRuby` or `ECMAScript`.
+The script can be used to call **URLs**(`JMX`, `JDBC`, `HTTP`,etc) support by the application running within container or simply read host-to-docker container mounted volumes files located at **DOCKER_STATS_DIR**
 
 Example: Get some statistics off a SQL database running in a Docker container.
 ```python
@@ -110,18 +110,18 @@ Example: Get some statistics off a SQL database running in a Docker container.
 
 ```
 
-Note: By default, **Jython 2.52** and **ECMAScript** are enabled in the Silver Fabric Engines.
+Note: By default, `Jython 2.52` and `ECMAScript` are enabled in the Silver Fabric Engines.
 See `TIBCO Silver Fabric SDK API, version 5.7*` for more details.
 
 Logs
 -----
 Currently, there are several approaches to handling logs with Docker:
 
-* ***Collecting from inside container*** - Each container starts up a log collection process in addition to the application that will be running.
+* ***Collecting from inside container*** - Either each application writes it own logs or each container starts up a log collection process in addition to the application that will be running.
 * ***Collecting from outside container*** - A single collection agent runs on the host and containers have a volume mounted from the host where they write their logs.
-* ***Collecting via a helper container*** - This is a slight variation of running the collection agent on the host. The collection agent is also run in a container and volumes from that container are bound to any application containers using the **volumes-from** docker run option. 
+* ***Collecting via a helper container*** - The collection agent is run in a separate container and volumes from that container are bound to any application containers using the `volumes-from` docker run option. 
 
-This enabler advocates using the ***Collecting from outside container*** approach since most existing applications probably already logged to a directory within the Docker container. This just needs to be exposed to Silver Fabric statistic collection mechanism by mapping an external host volume to an internal Docker log volume, specified by the runtime context variable **DOCKER_LOGS_DIR**.
+This enabler adopted a variation of using the ***Collecting from outside container*** approach since most non-trivial existing applications probably already logged to a directory within the Docker container. This just needs to be exposed to the existing Silver Fabric statistic collection mechanism by mapping an external host volume to an internal Docker log volume, specified by the runtime context variable **DOCKER_LOGS_DIR**.
 
 However, if an application logs to **STDOUT/STDERR**, Docker can extract that via the CLI ( see [docker logs]):
 ```sh
@@ -151,7 +151,7 @@ Runtime Context Variables
 --------------------------------------
 The runtime context variables for this enabler are classified into 4 categories:
 
-##A. Operations-related##
+###A. Operations-related###
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -169,7 +169,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **HTTP_PORT**|9090|Environment|HTTP listen port|false|Numeric
 **HTTPS_PORT**|9443|Environment|HTTPS listen port|false|Numeric
 
-##B. Dockerfile build-related##
+###B. Dockerfile build-related###
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -182,7 +182,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **REMOVE_ALWAYS**|false|String|Always remove any build intermediate containers, even if final build failed.|false|None
 **BUILD_TIMEOUT**|200|String|Max number of secs before build is terminated and failed.|false|None
 
-##C. Docker container-related##
+###C. Docker container-related###
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -200,7 +200,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **BIND_ON_ALL_LOCAL_ADDRESSES**|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
 **LISTEN_ADDRESS_NET_MASK**||Environment|A comma delimited list of net masks in `CIDR` notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
 
-##D. Docker container post-activation auxiliary processes injections##
+###D. Docker container post-activation auxiliary processes injections###
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
