@@ -139,16 +139,25 @@ Also each call to `docker logs` command retrieves the whole log!
 Post-activation auxiliary process injection
 ----------------------------------------------------
 Prior to `Docker 1.3.0`, a `foreground process` is required to run inside a Docker container to keep the container running. We call this the `primary process` of the container. It is not possible to start any background process first, followed lastly by a primary process.
-With `Docker 1.3.0`, it is possible to inject one or more auxialiry processes into the Docker container once its in running state(i.e. activated). This allows the possiblity of auxiliary "helper" processes. This could be used, for example, logging, statistics-collections or any additional processing, augmenting the primary process.
+With `Docker 1.3.0`, it is possible to inject one or more auxiliary processes into the Docker container once its in running state(i.e. activated). This could be used creatively, for example, logging, statistics-collections or any additional processing, augmenting the primary process.
 
 You can specify an ordered list of auxiliary processes to be injected into the activated Docker container by editing the [post_activations.cmds] specified by the runtime context variable **EXEC_CMD_FILE** with delay between process injections in seconds dictated by the runtime context variable **EXEC_CMD_DELAY**.
 
 ***Note***:
-If any process injection failed, an exception is thrown and remaining injections discarded but the `primary process` still runs.
+If any process injections failed, an exception is thrown and remaining injections discarded but the `primary process` still runs.
 
 Exporting Runtime Context Variables - `linking` ala Silver Fabric
 --------------------------------------------------------------------
-As aforementioned, this enabler uses Silver Fabric's runtime context variables exports to replace `linking' and 'volumes-from'. We briefly describes here how it works in the big picture.
+As aforementioned, this enabler uses Silver Fabric's runtime context variables exports to replace `linking` and `volumes-from`. We briefly describes here how it works in the big picture.
+The two portable attributes from a running Docker container perspective are its publicly-mapped ports and environment variables.
+
+Example:
+
+Two Docker container `A` and `B` are configured as Silver Fabric components `sf-A` and `sf-B` respectively with `A` depending on `B`.
+We can formally forced an activation sequence dependency by creating a Silver Fabric stack that activates `sf-A` first, followed by `sf-B`.
+After `sf-A` is activated, it exports publicly-mapped ports and environment variables desired by `B`. 
+When `sf-B` is activating, it will have access to the exported publicly-mapped ports and environment variables from `A`. `B` can then use these exported values by injecting them as its environment variables or use them to format Docker `CMD` or `ENTRYPOINT` when starting.
+In this way the two Docker containers are "linked".
 
 
 Runtime Context Variables
