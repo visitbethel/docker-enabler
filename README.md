@@ -111,7 +111,7 @@ Example: Get some statistics off a SQL database running in a Docker container.
 ```
 
 Note: By default, `Jython 2.52` and `ECMAScript` are enabled in the Silver Fabric Engines.
-See `TIBCO Silver Fabric SDK API, version 5.7*` for more details.
+See `TIBCO Silver Fabric SDK API, version 5.7` for more details.
 
 Logs
 -----
@@ -158,7 +158,7 @@ We can formally forced an activation sequence dependency by creating a Silver Fa
 After `sf-A` is activated, it exports publicly-mapped ports and environment variables desired by `B`. 
 When `sf-B` is activating, it will have access to the exported publicly-mapped ports and environment variables from `A`. `B` can then use these exported values by injecting them as its environment variables or use them to format Docker `CMD` or `ENTRYPOINT` when starting.
 In this way the two Docker containers are "linked".
-
+See `TIBCO Silver Fabric SDK API, version 5.7` for more details
 
 Runtime Context Variables
 --------------------------------------
