@@ -147,7 +147,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **BIND_ON_ALL_LOCAL_ADDRESSES**|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
 **LISTEN_ADDRESS_NET_MASK**||Environment|A comma delimited list of net masks in CIDR notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
 
-***D. Docker container post-activation auxiliary processes injections
+***D. Docker container post-activation auxiliary processes injections***
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -247,7 +247,7 @@ How Tos
 [docker logs]:https://docs.docker.com/reference/commandline/cli/#logs
 [Resource Preference rule]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_resource_preference.gif
 
-[Special directives]:https://raw.githubusercontent.com/fabrician/docker-enabler/master/src/main/resources/images/docker_runtime_context_vars.gif?token=3927123__eyJzY29wZSI6IlJhd0Jsb2I6ZmFicmljaWFuL2RvY2tlci1lbmFibGVyL21hc3Rlci9zcmMvbWFpbi9yZXNvdXJjZXMvaW1hZ2VzL2RvY2tlcl9ydW50aW1lX2NvbnRleHRfdmFycy5naWYiLCJleHBpcmVzIjoxNDE0MTAxMTE3fQ%3D%3D--ceccc95a0b64f88fc0c0e34039d4a6222d2061c2
+[Special directives]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_runtime_context_vars.gif
 
 [Container-related metadata]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_enabler_activationInfo.gif
 
