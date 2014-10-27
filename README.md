@@ -245,7 +245,7 @@ How Tos
 [Password-less sudo]:https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access
 [Configure Docker Remote API]:http://www.virtuallyghetto.com/2014/07/quick-tip-how-to-enable-docker-remote-api.html
 [docker logs]:https://docs.docker.com/reference/commandline/cli/#logs
-[Resource Preference rule]:https://raw.githubusercontent.com/fabrician/docker-enabler/master/src/main/resources/images/docker_resource_preference.gif?token=3927123__eyJzY29wZSI6IlJhd0Jsb2I6ZmFicmljaWFuL2RvY2tlci1lbmFibGVyL21hc3Rlci9zcmMvbWFpbi9yZXNvdXJjZXMvaW1hZ2VzL2RvY2tlcl9yZXNvdXJjZV9wcmVmZXJlbmNlLmdpZiIsImV4cGlyZXMiOjE0MTQwOTcyNzZ9--64b834ab47f3c8ad295791d3d0e21d307aebec15
+[Resource Preference rule]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_resource_preference.gif
 
 [Special directives]:https://raw.githubusercontent.com/fabrician/docker-enabler/master/src/main/resources/images/docker_runtime_context_vars.gif?token=3927123__eyJzY29wZSI6IlJhd0Jsb2I6ZmFicmljaWFuL2RvY2tlci1lbmFibGVyL21hc3Rlci9zcmMvbWFpbi9yZXNvdXJjZXMvaW1hZ2VzL2RvY2tlcl9ydW50aW1lX2NvbnRleHRfdmFycy5naWYiLCJleHBpcmVzIjoxNDE0MTAxMTE3fQ%3D%3D--ceccc95a0b64f88fc0c0e34039d4a6222d2061c2
 
