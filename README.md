@@ -141,7 +141,7 @@ Post-activation auxiliary process injection
 Prior to Docker 1.3.0, a foreground process is required to run inside a Docker container to keep the container running. We call this the `primary process` of the container. It is not possible to start any background process first, followed lastly by a primary process.
 With Docker 1.3.0, it is possible to inject one or more auxialiry processes into the Docker container once its in running state(i.e. activated). This allows the possiblity of auxiliary "helper" processes. This could be used, for example, logging, statistics-collections or any additional processing, augmenting the primary process.
 
-You can specify an ordered list of auxiliary processes to be injected into the activated Docker container by editing the `post_activations.cmds` specified by the runtime context variable **EXEC_CMD_FILE**.
+You can specify an ordered list of auxiliary processes to be injected into the activated Docker container by editing the [post_activations.cmds] specified by the runtime context variable **EXEC_CMD_FILE**.
 
 Exporting Runtime Context Variables - `linking` ala Silver Fabric
 --------------------------------------------------------------------
@@ -307,4 +307,6 @@ Note: If you are using `COPY` or `ADD` commands in the Dockerfile, you can add t
 [Special directives]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_runtime_context_vars.gif
 
 [Container-related metadata]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_enabler_activationInfo.gif
+
+[post_activations.cmds]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_post_activation_process_injections.gif
 
