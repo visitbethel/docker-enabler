@@ -143,11 +143,15 @@ With Docker 1.3.0, it is possible to inject one or more auxialiry processes into
 
 You can specify an ordered list of auxiliary processes to be injected into the activated Docker container by editing the `post_activations.cmds` specified by the runtime context variable **EXEC_CMD_FILE**.
 
+Exporting Runtime Context Variables - `linking` ala Silver Fabric
+--------------------------------------------------------------------
+TODO
+
 Runtime Context Variables
 --------------------------------------
 The runtime context variables for this enabler are classified into 4 categories:
 
-***A. Operations-related***
+##A. Operations-related##
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -165,7 +169,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **HTTP_PORT**|9090|Environment|HTTP listen port|false|Numeric
 **HTTPS_PORT**|9443|Environment|HTTPS listen port|false|Numeric
 
-***B. Dockerfile build-related***
+##B. Dockerfile build-related##
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -178,7 +182,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **REMOVE_ALWAYS**|false|String|Always remove any build intermediate containers, even if final build failed.|false|None
 **BUILD_TIMEOUT**|200|String|Max number of secs before build is terminated and failed.|false|None
 
-***C. Docker container-related***
+##C. Docker container-related##
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -196,7 +200,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **BIND_ON_ALL_LOCAL_ADDRESSES**|false|Environment|Specify if all network interfaces should be bounded for all public port access|false|None
 **LISTEN_ADDRESS_NET_MASK**||Environment|A comma delimited list of net masks in `CIDR` notation. The first IP address found that matches one of the net masks is used as the listen address. Note that BIND_ON_ALL_LOCAL_ADDRESSES overrides this setting.|false|None
 
-***D. Docker container post-activation auxiliary processes injections***
+##D. Docker container post-activation auxiliary processes injections##
 
 Variable Name|Default value|Type|Description|Export|Auto Increment
 ---|---|---|---|---|---
@@ -225,7 +229,7 @@ Prefix directive|Purpose|Variable name syntax|Variable value
 **!VOL_MAP_**| Mount an external host volume to an internal Docker container volume|`!VOL_MAP_`xxxx|\<`external volume path`\>:\<`internal volume path`\>:[`rw`,`ro`]
 **!ENV_VAR_**| Inject an environment variable into the Docker container|`!ENV_VAR_`xxxx|`key=value`, `key=`, `key`
 **!ENV_FILE_**| Inject a list of environment variables specified as `key=value` pairs from a file into the Docker container|`!ENV_FILE_`xxxx|\<`path to a file`\>
-**!SEC_OPT_**| Specify a Docker conatiner security option(Valid only for Docker \>= 1.3.0)|`!SEC_OPT_`xxxx|One or more from the list [ `label:user:`\<**USER**\>, `label:role:`\<**ROLE**\>, `label:type:`\<**TYPE**\>, `label:level:`\<**LEVEL**\>, `label:disable`,`apparmor:`\<**PROFILE**\>]
+**!SEC_OPT_**| Specify a Docker conatiner security option(Valid only for Docker \>= 1.3.0)|`!SEC_OPT_`xxxx|One or more from the list [ `label:user:`\<**USER**\>, `label:role:`\<**ROLE**\>, `label:type:`\<**TYPE**\>, `label:level:`\<**LEVEL**\>, `label:disable`,`apparmor:`\<**PROFILE**\>]. See [Docker and SELinux] for detail usage for `USER`,`ROLE`,`TYPE` and `LEVEL`.
 
 Silver Fabric Engine activation info from Docker container
 ----------------------------------------------------------
@@ -296,6 +300,8 @@ Note: If you are using `COPY` or `ADD` commands in the Dockerfile, you can add t
 [Password-less sudo]:https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access
 [Configure Docker Remote API]:http://www.virtuallyghetto.com/2014/07/quick-tip-how-to-enable-docker-remote-api.html
 [docker logs]:https://docs.docker.com/reference/commandline/cli/#logs
+[Docker and SELinux]:http://www.projectatomic.io/docs/docker-and-selinux/
+
 [Resource Preference rule]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_resource_preference.gif
 
 [Special directives]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_runtime_context_vars.gif
