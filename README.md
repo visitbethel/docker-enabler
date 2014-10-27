@@ -5,8 +5,8 @@ Silver Fabric Docker Enabler Guide
 
 Introduction
 --------------------------------------
-Silver Fabric Docker Enabler adapts a Docker container to be provisioned and orchestrated by TIBCO Silver Fabric. Only useful Docker features are adapted in the context of the normative use of Silver Fabric.
-This enabler is based on **Docker 1.2.0** runtime on Linux64.
+`Silver Fabric Docker Enabler` adapts a Docker container to be provisioned and orchestrated by `TIBCO Silver Fabric`. Only useful Docker features are adapted in the context of the normative use of Silver Fabric.
+This enabler is based on **Docker 1.2.0, 1.3.0** runtime on Linux64.
 
 Supported Platforms
 --------------------------------------
@@ -21,7 +21,7 @@ Supported Docker versions
 
 Installing the Enabler
 --------------------------------------
-The Enabler consists of an enabler runtime Grid Library only.
+The Enabler consists of an enabler runtime `Grid Library` only.
 The Enabler Runtime contains information specific to a Silver Fabric version that is used to integrate the Enabler.
 Installation of the Silver Fabric Docker Enabler involves copying the Grid 
 Library to the **SF_HOME/webapps/livecluster/deploy/resources/gridlib** directory on the Silver Fabric Broker. 
@@ -66,9 +66,9 @@ Docker containers can be viewed from two perspectives:
 * As lightweight VMs
 * As an application-level packaging mechanism
 
-This Enabler take the latter view, where a Docker container is treated as alternative application packaging in addition to Silver Fabric's own "gridlib" application packaging mechanism.
+This Enabler take the latter view, where a Docker container is treated as alternative application packaging in addition to Silver Fabric's own `gridlib` application packaging mechanism.
 This allows application process from both types of packaging to mix and interact.
-While Docker container advocate single process ala **microservice**, on the otherhand, Silver Fabric **gridlib** allows for more complex traditional application. 
+While Docker container advocate single process ala `microservice`, on the otherhand, Silver Fabric `gridlib` allows for more complex traditional application. 
 So they can both be used in a complementary way.
 
 We also do not support Docker **--link** and **--volumes-from** features to allow instead the use of Silver Fabric's component dependency management to be used to link running processes across different hosts by exporting runtime context variables. For example, a Docker container running on host A could be "linked" to a Silver Fabric grid lib application process running on host by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only.
@@ -78,17 +78,40 @@ Statistics
 There are 2 kinds of statistics related to a running Docker container:
 ### Application-level statistics
 * This are often read via some standard mechanism like **JMX** or just log to files.
+If you log to files within the container , you can mount a host "stats volume" using the runtime context variable **DOCKER_STATS_DIR** to the stats volume directory within the container.
 
 ### Container-level statistics
 * At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API, nor are the container statistics that useful at the moment from the application perspective.
 
 There are a number of OSS hacks out there but lack of an API means its liable to be broken with Docker runtime evolving. So use it at your own risks.
 
-Regardless, user can use Silver Fabric's statistics scripting support to gather statistics of interest by using **Jython**, **JRuby** or **ECMAScript**.
-The script can be used to call JMX or simply read host-to-docker container mounted volumes files.
+Regardless of Application-level or Container-level statistics, you can use Silver Fabric's **statistics scripting support** to gather statistics of interest by using **Jython**, **JRuby** or **ECMAScript**.
+The script can be used to call **URLs**(JMX, JDBC, HTTP,etc) support by the application running within container or simply read host-to-docker container mounted volumes files located at **DOCKER_STATS_DIR**
+
+Example: Get some statistics off a SQL database running in a Docker container.
+```python
+ def getStatistic(statName):
+     statValue = 0.0
+     if statName == 'Wiki Size':
+         connection = dbConnection()
+         statement = connection.createStatement()
+         resultSet = statement.executeQuery("SELECT sum(M_FILESIZE) FROM PUBLIC.M_JSPWIKI")
+         while resultSet.next():
+             wikiSize = resultSet.getString(1)
+             if wikiSize != None:
+                 statValue = float(wikiSize)
+         resultSet.close()
+         statement.close()
+         connection.close()
+     else:
+        logger.warning('Unknown statistic: ' + statName)
+     
+     return statValue
+
+```
 
 Note: By default, **Jython 2.52** and **ECMAScript** are enabled in the Silver Fabric Engines.
-
+See `TIBCO Silver Fabric SDK API, version 5.7*` for more details.
 
 Logs
 -----
@@ -96,7 +119,7 @@ Currently, there are several approaches to handling logs with Docker:
 
 * ***Collecting from inside container*** - Each container starts up a log collection process in addition to the application that will be running.
 * ***Collecting from outside container*** - A single collection agent runs on the host and containers have a volume mounted from the host where they write their logs.
-* ***Collecting via a helper container*** - This is a slight variation of running the collection agent on the host. The collection agent is also run in a container and volumes from that container are bound to any application containers using the **volumes-from** docker run option.
+* ***Collecting via a helper container*** - This is a slight variation of running the collection agent on the host. The collection agent is also run in a container and volumes from that container are bound to any application containers using the **volumes-from** docker run option. 
 
 This enabler advocates using the ***Collecting from outside container*** approach since most existing applications probably already logged to a directory within the Docker container. This just needs to be exposed to Silver Fabric statistic collection mechanism by mapping an external host volume to an internal Docker log volume, specified by the runtime context variable **DOCKER_LOGS_DIR**.
 
@@ -109,8 +132,16 @@ and copy the log to **DOCKER_LOGS_DIR**
 **Note**: 
 There are a few operational issues with this currently as it is quite primitive:
 This log file grows indefinitely. Docker logs each line as a JSON message which can cause this file to grow quickly and exceed the disk space on the host since it’s not rotated automatically.
-The docker logs command returns all recorded logs each time it’s run. Any long running process that is a little verbose can be difficult to examine. Logs under the containers "/var/log" or other locations are not easily visible or accessible.
-Also each call to 'docker logs' command retrieves the whole log!
+The docker logs command returns all recorded logs each time it’s run. Any long running process that is a little verbose can be difficult to examine. Logs under the containers `/var/log` or other locations are not easily visible or accessible.
+Also each call to `docker logs` command retrieves the whole log!
+
+
+Post-activation auxiliary process injection
+----------------------------------------------------
+Prior to Docker 1.3.0, a foreground process is required to run inside a Docker container to keep the container running. We call this the `primary process` of the container. It is not possible to start any background process first, followed lastly by a primary process.
+With Docker 1.3.0, it is possible to inject one or more auxialiry processes into the Docker container once its in running state(i.e. activated). This allows the possiblity of auxiliary "helper" processes. This could be used, for example, logging, statistics-collections or any additional processing, augmenting the primary process.
+
+You can specify an ordered list of auxiliary processes to be injected into the activated Docker container by editing the `post_activations.cmds` specified by the runtime context variable **EXEC_CMD_FILE**.
 
 Runtime Context Variables
 --------------------------------------
@@ -154,11 +185,11 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **DOCKER_CONTAINER_NAME**||String|Base name of the container, with instances of container having same base name prefixed by engine instance id. Ex. 'my_container1','my_container2',etc. Leave this blank if you want unique name auto-generated.|false|Append
 **REUSE_CONTAINER**|false|String|Reuse existing same named container instead of creating a new one|false|None
 **PRIVILEDGED_MODE**|false|String|Set the container to run in privileged mode|false|None
-**CMD_OVERRIDE**||Environment|Command executable (and any of its arguments) to run in a container that result in a foreground process. Note: If the image also specifies an 'ENTRYPOINT' then this get appended as arguments to the ENTRYPOINT.|false|None
-**ENTRY_POINT_OVERRIDE**||String|Overrides default executable(usually '/bin/bash') to run when container starts up. Use this in conjunction with 'CMD_OVERRIDE'|false|None
-**USER_OVERRIDE**||String|Overrides default user('root', uid=0) within a container when it starts up. Use Username or UID|false|None
+**CMD_OVERRIDE**||Environment|Command executable (and any of its arguments) to run in a container that result in a foreground process. Note: If the image also specifies an `ENTRYPOINT` then this get appended as arguments to the `ENTRYPOINT`.|false|None
+**ENTRY_POINT_OVERRIDE**||String|Overrides default executable(usually `/bin/bash`) to run when container starts up. Use this in conjunction with `CMD_OVERRIDE`|false|None
+**USER_OVERRIDE**||String|Overrides default user(`root`, `uid=0`) within a container when it starts up. Use Username or UID|false|None
 **WORKDIR_OVERRIDE**||String|Overrides default working dir inside Docker container|false|None
-**!ENV_FILE_Default**|${DOCKER_ENVS_DIR}/envs.properties|String|An properties file containing environment variables to be injected into container. This may override some or all 'ENV' already set in the image|false|None
+**!ENV_FILE_Default**|${DOCKER_ENVS_DIR}/envs.properties|String|An properties file containing environment variables to be injected into container. This may override some or all `ENV` already set in the image|false|None
 **MEMORY_LIMIT**|256m|String|Upper limit to container RAM memory in the format NNNx where NNN is an integer and x is the unit(b,k,m, or g). ex. 256m|false|None
 **MAX_STOP_TIME_BEFORE_KILL**|30|Environment|Maxiumum secs to wait before a force stop is used to shutdown a Docker container|false|None
 **CID_FILE**|${DOCKER_BASE_DIR}/${DOCKER_CONTAINER_NAME}.cid|Environment|A file that is created when a Docker container is created and run.|false|None
