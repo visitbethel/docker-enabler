@@ -14,6 +14,11 @@ Supported Platforms
 * Linux-64 only for Silver Fabric Engine Daemon
 * Windows, Linux  for Silver Fabric Broker
 
+Supported Docker versions
+-------------------------
+* 1.2.0
+* 1.3.0
+
 Installing the Enabler
 --------------------------------------
 The Enabler consists of an enabler runtime Grid Library only.
@@ -40,7 +45,7 @@ Enabling Docker on the Silver Fabric engine daemon host
 -------------------------------------------------
 Each Silver Fabric engine daemon host needs to be "docker-enabled" before it can be used to build Docker images or run Docker containers. The 3 main steps are:
 
-1. Install ***Docker 1.2.0*** runtime 
+1. Install ***Docker 1.2.0*** or ***Docker 1.3.0*** runtime 
     * See [Install Docker] for details
 2. Configure ***Password-less sudo*** access to run Docker CLI commands and Remote API
     * See [Password-less sudo] for details
@@ -75,7 +80,7 @@ There are 2 kinds of statistics related to a running Docker container:
 * This are often read via some standard mechanism like **JMX** or just log to files.
 
 ### Container-level statistics
-* At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API.
+* At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API, nor are the container statistics that useful at the moment from the application perspective.
 
 There are a number of OSS hacks out there but lack of an API means its liable to be broken with Docker runtime evolving. So use it at your own risks.
 
@@ -87,12 +92,25 @@ Note: By default, **Jython 2.52** and **ECMAScript** are enabled in the Silver F
 
 Logs
 -----
-* Most application probably logged to a directory within the Docker container. This needs to be exposed to Silver Fabric statistic collection mechanism by mapping an external  host volume to an internal Docker log volume.
+Currently, there are several approaches to handling logs with Docker:
 
-* If an application logs to **STDOUT**, Docker can extract that via the CLI ( see [docker logs]):
+* ***Collecting from inside container*** - Each container starts up a log collection process in addition to the application that will be running.
+* ***Collecting from outside container*** - A single collection agent runs on the host and containers have a volume mounted from the host where they write their logs.
+* ***Collecting via a helper container*** - This is a slight variation of running the collection agent on the host. The collection agent is also run in a container and volumes from that container are bound to any application containers using the **volumes-from** docker run option.
+
+This enabler advocates using the ***Collecting from outside container*** approach since most existing applications probably already logged to a directory within the Docker container. This just needs to be exposed to Silver Fabric statistic collection mechanism by mapping an external host volume to an internal Docker log volume, specified by the runtime context variable **DOCKER_LOGS_DIR**.
+
+However, if an application logs to **STDOUT/STDERR**, Docker can extract that via the CLI ( see [docker logs]):
 ```sh
 docker logs <container name >
 ```
+and copy the log to **DOCKER_LOGS_DIR**
+
+**Note**: 
+There are a few operational issues with this currently as it is quite primitive:
+This log file grows indefinitely. Docker logs each line as a JSON message which can cause this file to grow quickly and exceed the disk space on the host since it’s not rotated automatically.
+The docker logs command returns all recorded logs each time it’s run. Any long running process that is a little verbose can be difficult to examine. Logs under the containers "/var/log" or other locations are not easily visible or accessible.
+Also each call to 'docker logs' command retrieves the whole log!
 
 Runtime Context Variables
 --------------------------------------
@@ -176,6 +194,7 @@ Prefix directive|Purpose|Variable name syntax|Variable value
 **!VOL_MAP_**| Mount an external host volume to an internal Docker container volume|!VOL_MAP_xxxx|\<external volume path\>:\<internal volume path\>:[rw,ro]
 **!ENV_VAR_**| Inject an environment variable into the Docker container|!ENV_VAR_xxxx|key=value, key=, key
 **!ENV_FILE_**| Inject a list of environment variables specified as `key=value` pairs from a file into the Docker container|!ENV_FILE_xxxx|\<path to a file\>
+**!SEC_OPT_**| Specify a Docker conatiner security option(Valid only for Docker \>= 1.3.0)|!SEC_OPT_xxxx|One or more from the list [ label\:user\:\<**USER**\>, label\:role\:\<**ROLE**\>, label\:type\:\<**TYPE**\>, label\:level:\<**LEVEL**\>, label:disable,apparmor\:\<**PROFILE**\>]
 
 Silver Fabric Engine activation info from Docker container
 ----------------------------------------------------------
