@@ -176,13 +176,29 @@ A real life example would be a `MySQL` database as `B` and a web application run
 
 See `TIBCO Silver Fabric SDK API, version 5.7` for more details
 
-Exporting and consuming Runtime Context Variables dynamically - `microservices` ala Silver Fabric
+Runtime Context Variable Providers and service discovery - `microservices` ala Silver Fabric
 --------------------------------------------------------------------------------------------------
-Cloud and Docker containers have give rise to [microsservices](http://martinfowler.com/articles/microservices.html)
+Cloud popularize [microservice architectural style](http://martinfowler.com/articles/microservices.html):
+where building applications as suites of services are favored over monolith. 
+In this style, services are independently deployable and scalable where each service also provides a firm module boundary, even allowing for different services to be written in different programming languages.
+Docker espouse this practice and advocate `single process` container use in this manner.
+
+`TIBCO Silver Fabric SDK API` allows you to implement and register one or more `Variable providers` as a source of configurations and environment values to be used when activating your Docker containers. This source is constantly polled and updated by the Silver Fabric broker and make available as sets of runtime context variables namespaced by the name of the provider.
+This allows a `service discovery` usage.
+
+For example,  you can activate a pool of `MySQL` docker containers and register them under a variable provider `MySQL_Swarm` with their key-value pairs of database connection parameters(jdbc urls, ports, passwords, etc).
+When a database consuming docker container needs a `MySQL` instance, it just ask for a set of "available" connection parameters namespaced under `MySQL_Swarm` and access it like so:
+```
+${MYSQL_Swarm.get("JDBC_URL")}
+```
+***Note***:
+A service discovery `Varible provider` maybe implemented using a lightweight distributed key value store like [etcd](https://coreos.com/using-coreos/etcd/) with each `Docker hosts` serving as a `etcd node`.
+
 
 Silver Fabric Engine activation info from Docker container
 ----------------------------------------------------------
 [Container-related metadata] info are collected as activation info by the engine that proxy the lifecycle of the associated Docker it manages. They are prefixed by **docker_**.
+
 
 Runtime Context Variables
 --------------------------------------
