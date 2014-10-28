@@ -194,7 +194,7 @@ ${MYSQL_Swarm.get("JDBC_URL")}
 ***Note***:
 A service discovery `Varible provider` maybe implemented using a lightweight distributed key value store like [etcd](https://coreos.com/using-coreos/etcd/) with each `Docker hosts` serving as a `etcd node`.
 
-See `AbstractVariableProvider` and `AbstractDynamicVariableProvider` in the `TIBCO Silver Fabric SDK API 5.7` for details.
+See ***AbstractVariableProvider*** and ***AbstractDynamicVariableProvider*** classes in the `TIBCO Silver Fabric SDK API 5.7` for details.
 
 
 Silver Fabric Engine activation info from Docker container
