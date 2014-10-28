@@ -79,6 +79,14 @@ Though Docker containers are lightweight and can be spun up fast, provisioning m
 
 Therefore, you should  "limit" the Docker container instantiations by setting the number of `Silver Fabric engine instances` to acceptable upper limit that reflects the capability of the `Docker host` and the characteristics of the Docker container resource consumption.
 
+Configuring Silver Fabric Engine Resource Preference
+-----------------------------------------------------
+
+Since not all Silver Fabric daemon engine hosts(physical or virtual) are Docker-enabled, a [Resource Preference rule] needs to be set when configuring a Silver Fabric component from this enabler using **Docker Enabled** engine property.
+This allows Silver Fabric Broker to deploy component to the right engine hosts that are Docker-enabled; otherwise the component deployment will fail.
+
+In addition, you can also use the **Docker VersionInfo** engine property to run on certain Docker version only.
+
 Statistics
 --------------------------------------
 There are 2 kinds of statistics related to a running Docker container:
@@ -170,7 +178,11 @@ See `TIBCO Silver Fabric SDK API, version 5.7` for more details
 
 Exporting and consuming Runtime Context Variables dynamically - `microservices` ala Silver Fabric
 --------------------------------------------------------------------------------------------------
-TODO
+Cloud and Docker containers have give rise to [microsservices](http://martinfowler.com/articles/microservices.html)
+
+Silver Fabric Engine activation info from Docker container
+----------------------------------------------------------
+[Container-related metadata] info are collected as activation info by the engine that proxy the lifecycle of the associated Docker it manages. They are prefixed by **docker_**.
 
 Runtime Context Variables
 --------------------------------------
@@ -234,15 +246,6 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **EXEC_CMD_DELAY**|1|String|Delay in seconds in-between injecting a sequence of processes specified in 'EXEC_CMD_FILE'. (Valid for Docker >=1.3.0 only)|false|None
 
 
-Configuring Silver Fabric Engine Resource Preference
------------------------------------------------------
-
-Since not all Silver Fabric daemon engine hosts(physical or virtual) are Docker-enabled, a [Resource Preference rule] needs to be set when configuring a Silver Fabric component from this enabler using **Docker Enabled** engine property.
-This allows Silver Fabric Broker to deploy component to the right engine hosts that are Docker-enabled; otherwise the component deployment will fail.
-
-In addition, you can also use the **Docker VersionInfo** engine property to run on certain Docker version only.
-
-
 Special runtime context variable name directives
 ------------------------------------------------
 
@@ -255,10 +258,6 @@ Prefix directive|Purpose|Variable name syntax|Variable value
 **!ENV_VAR_**| Inject an environment variable into the Docker container|`!ENV_VAR_`xxxx|`key=value`, `key=`, `key`
 **!ENV_FILE_**| Inject a list of environment variables specified as `key=value` pairs from a file into the Docker container|`!ENV_FILE_`xxxx|\<`path to a file`\>
 **!SEC_OPT_**| Specify a Docker conatiner security option(Valid only for Docker \>= 1.3.0)|`!SEC_OPT_`xxxx|One or more from the list [ `label:user:`\<**USER**\>, `label:role:`\<**ROLE**\>, `label:type:`\<**TYPE**\>, `label:level:`\<**LEVEL**\>, `label:disable`,`apparmor:`\<**PROFILE**\>]. See [Docker and SELinux] for detail usage for `USER`,`ROLE`,`TYPE` and `LEVEL`.
-
-Silver Fabric Engine activation info from Docker container
-----------------------------------------------------------
-[Container-related metadata] info are collected as activation info by the engine that proxy the lifecycle of the associated Docker it manages. They are prefixed by **docker_**.
 
 How Tos
 -------
