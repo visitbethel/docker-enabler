@@ -30,8 +30,8 @@ Additionally, this Enabler requires the Silver Fabric Engine to use Java 1.7
 
 Runtime Grid Library
 --------------------------------------
-The Enabler Runtime Grid Library is created by building the maven project. The build depends on the **SilverFabricSDK.jar** file that is distributed with TIBCO Silver Fabric. 
-The SilverFabricSDK.jar file needs to be referenced in the maven pom.xml or it can be placed in the project root directory.
+The Enabler Runtime Grid Library is created by building the maven project. The build depends on the **SilverFabricSDK.jar** file that is distributed with `TIBCO Silver Fabric SDK API`. 
+The `SilverFabricSDK.jar` file needs to be referenced in the maven pom.xml or it can be placed in the project root directory.
 
 ```bash
 mvn package
@@ -188,11 +188,13 @@ This allows a `service discovery` usage.
 
 For example,  you can activate a pool of `MySQL` docker containers and register them under a variable provider `MySQL_Swarm` with their key-value pairs of database connection parameters(jdbc urls, ports, passwords, etc).
 When a database consuming docker container needs a `MySQL` instance, it just ask for a set of "available" connection parameters namespaced under `MySQL_Swarm` and access it like so:
-```
+```bash
 ${MYSQL_Swarm.get("JDBC_URL")}
 ```
 ***Note***:
 A service discovery `Varible provider` maybe implemented using a lightweight distributed key value store like [etcd](https://coreos.com/using-coreos/etcd/) with each `Docker hosts` serving as a `etcd node`.
+
+See `AbstractVariableProvider` and `AbstractDynamicVariableProvider` in the `TIBCO Silver Fabric SDK API 5.7` for details.
 
 
 Silver Fabric Engine activation info from Docker container
