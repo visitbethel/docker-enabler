@@ -42,7 +42,7 @@ mvn package -Ddistribution.version=1.0.1
 ```
 
 Enabling Docker on the Silver Fabric engine daemon host
--------------------------------------------------
+--------------------------------------------------------
 Each Silver Fabric engine daemon host needs to be "docker-enabled" before it can be used to build Docker images or run Docker containers. The 3 main steps are:
 
 1. Install ***Docker 1.2.0*** or ***Docker 1.3.0*** runtime 
@@ -133,11 +133,11 @@ However, if an application logs to **STDOUT/STDERR**, Docker can extract that vi
 ```sh
 docker logs <container name >
 ```
-and copy the log to **DOCKER_LOGS_DIR**
+and copy the log to **DOCKER_LOGS_DIR**. By default, this enabler collects any logs placed in the location **DOCKER_LOGS_DIR**.
 
-***Note***: 
-There are a few operational issues with this currently as it is quite primitive:
-This log file grows indefinitely. Docker logs each line as a JSON message which can cause this file to grow quickly and exceed the disk space on the host since it’s not rotated automatically.
+***Warning***: 
+There are a few operational issues with `docker logs` as it is quite primitive:
+This log file grows indefinitely. Docker logs each line as a JSON message which can cause this file to grow quickly and exceed the disk space on the host since it is not rotated automatically.
 The docker logs command returns all recorded logs each time it’s run. Any long running process that is a little verbose can be difficult to examine. Logs under the containers `/var/log` or other locations are not easily visible or accessible.
 Also each call to `docker logs` command retrieves the whole log!
 
