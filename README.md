@@ -73,6 +73,12 @@ So they can both be used in a complementary way.
 
 We also do not support Docker `--link` and `--volumes-from` features to allow instead the use of Silver Fabric's `component dependency management` to be used to link running processes across different hosts by `exporting runtime context variables`. For example, a Docker container running on host A could be "linked" to a Silver Fabric gridlib application process running on host by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only.
 
+Docker container instantiation limit
+-------------------------------------
+Though Docker containers are lightweight and can be spun up fast, provisioning multiple containers on a single `Docker host`, will eventually run into limits based on the physical or virtual machine being used. Even a large server with many GB (or even TB) of memory and many cores will eventually be unable to handle further containers, especially with workload from non-trivial containers.
+
+Therefore, you should  "limit" the Docker container instantiations by setting the number of `Silver Fabric engine instances` to acceptable upper limit that reflects the capability of the `Docker host` and the characteristics of the Docker container resource consumption.
+
 Statistics
 --------------------------------------
 There are 2 kinds of statistics related to a running Docker container:
@@ -151,14 +157,20 @@ Exporting Runtime Context Variables - `linking` ala Silver Fabric
 As aforementioned, this enabler uses Silver Fabric's runtime context variables exports to replace `linking` and `volumes-from`. We briefly describes here how it works in the big picture.
 The two portable attributes from a running Docker container perspective are its publicly-mapped ports and environment variables.
 
-Example:
+Example: Two Docker container `A` and `B` are configured as Silver Fabric components `sf-A` and `sf-B` respectively with `A` depending on `B`.
 
-Two Docker container `A` and `B` are configured as Silver Fabric components `sf-A` and `sf-B` respectively with `A` depending on `B`.
 We can formally forced an activation sequence dependency by creating a Silver Fabric stack that activates `sf-A` first, followed by `sf-B`.
 After `sf-A` is activated, it exports publicly-mapped ports and environment variables desired by `B`. 
 When `sf-B` is activating, it will have access to the exported publicly-mapped ports and environment variables from `A`. `B` can then use these exported values by injecting them as its environment variables or use them to format Docker `CMD` or `ENTRYPOINT` when starting.
 In this way the two Docker containers are "linked".
+
+A real life example would be a `MySQL` database as `B` and a web application running Apache Tomcat as `A`.
+
 See `TIBCO Silver Fabric SDK API, version 5.7` for more details
+
+Exporting and consuming Runtime Context Variables dynamically - `microservices` ala Silver Fabric
+--------------------------------------------------------------------------------------------------
+TODO
 
 Runtime Context Variables
 --------------------------------------
