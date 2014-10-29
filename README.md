@@ -111,7 +111,7 @@ If you log to files within the container , you can mount a host "stats volume" u
 There are a number of OSS hacks out there but lack of an API means its liable to be broken with Docker runtime evolving. So use it at your own risks.
 
 Regardless of Application-level or Container-level statistics, you can use Silver Fabric's **statistics scripting support** to gather statistics of interest by using `Jython`, `JRuby` or `ECMAScript`.
-The script can be used to call **URLs**(`JMX`, `JDBC`, `HTTP`,etc) support by the application running within container or simply read host-to-docker container mounted volumes files located at **DOCKER_STATS_DIR**
+The script can be used to call **URLs**(`JMX`, `JDBC`, `HTTP`,etc) supported by the application running within a container or simply read host-to-docker container mounted volumes files located at **DOCKER_STATS_DIR** from a container stats dump.
 
 Example: Get some statistics off a SQL database running in a Docker container.
 ```python
