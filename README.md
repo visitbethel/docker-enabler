@@ -87,6 +87,17 @@ This allows Silver Fabric Broker to deploy component to the right engine hosts t
 
 In addition, you can also use the **Docker VersionInfo** engine property to run on certain Docker version only.
 
+Building image using `Dockerfile`
+---------------------------------
+This enabler allows you to build an image using `Dockerfile` before running a container, but you are responsible for pulling down any base image(s) that is required on a `Docker host`.
+
+`TIBCO Silver Fabric 5.7`'s `Puppet` and `Chef` manifests support in a Silver Fabric component maybe use for this purpose. You may also use any other CM toolings of your choice.
+Typically, doing a `Dockerfile` build for production on the fly is discouraged as `Docker hosts` may not have access to Internet or may face other security, permission or unforeseen build issues.
+
+Pulling images from `Docker Hub` or private registries
+------------------------------------------------------
+Like building `Dockerfile`, this too is left to using `Puppet` and `Chef` manifests or the CM toolings of your choice.
+
 Statistics
 --------------------------------------
 There are 2 kinds of statistics related to a running Docker container:
