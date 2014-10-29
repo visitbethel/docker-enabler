@@ -71,7 +71,7 @@ This allows application process from both types of packaging to mix and interact
 While Docker container advocate single process ala `microservice`, on the otherhand, Silver Fabric `gridlib` allows for more complex traditional application. 
 So they can both be used in a complementary way.
 
-We also do not support Docker `--link` and `--volumes-from` features to allow instead the use of Silver Fabric's `component dependency management` to be used to link running processes across different hosts by `exporting runtime context variables`. For example, a Docker container running on host A could be "linked" to a Silver Fabric gridlib application process running on host by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only.
+We also do not support Docker `--link` and `--volumes-from` features to allow instead the use of Silver Fabric's `component dependency management` to be used to link running processes across different hosts by `exporting runtime context variables`. For example, a Docker container running on host A could be "linked" to a Silver Fabric gridlib application process running on host B by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only.
 
 Docker container instantiation limit
 -------------------------------------
@@ -89,7 +89,7 @@ In addition, you can also use the **Docker VersionInfo** engine property to run 
 
 Building image using `Dockerfile`
 ---------------------------------
-This enabler allows you to build an image using `Dockerfile` before running a container, but you are responsible for pulling down any base image(s) that is required on a `Docker host`.
+This enabler allows you to build an image using `Dockerfile` before running a container, but you are responsible for pulling down any base image(s) that is required on a `Docker host` since this is security-sensitive operation.
 
 `TIBCO Silver Fabric 5.7`'s `Puppet` and `Chef` manifests support in a Silver Fabric component maybe use for this purpose. You may also use any other CM toolings of your choice.
 Typically, doing a `Dockerfile` build for production on the fly is discouraged as `Docker hosts` may not have access to Internet or may face other security, permission or unforeseen build issues.
