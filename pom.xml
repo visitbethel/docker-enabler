@@ -10,7 +10,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<distribution.os>linux64</distribution.os>
 		<distribution.version>1.0.0</distribution.version>
-		<component.type.version>5.5.0</component.type.version>
+		<component.type.version>5.7.0.0</component.type.version>
 		<fabric-version>5.6.0.13</fabric-version>
 		<fabric-sdk-jar>${basedir}/SilverFabricSDK.jar</fabric-sdk-jar>
 		<docker.base>docker</docker.base>
