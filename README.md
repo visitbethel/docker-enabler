@@ -89,13 +89,13 @@ In addition, you can also use the **Docker VersionInfo** engine property to run 
 
 Building image using `Dockerfile`
 ---------------------------------
-This enabler allows you to build an image using `Dockerfile` before running a container, but you are required to pulling down any base image(s) that is required on a `Docker host` since this is security-sensitive operation.
+This enabler allows you to build an image using `Dockerfile` before running a container, but you are required to pulling down beforehand any base image(s) that is required on a `Docker host` since this is security-sensitive operation.
 
-`TIBCO Silver Fabric 5.7`'s `Puppet and Chef support` for a Silver Fabric component maybe use for this purpose. You may also use any other CM toolings of your choice.
+`TIBCO Silver Fabric 5.7`'s [Puppet and Chef support] for a Silver Fabric component maybe use for this purpose. You may also use any other CM toolings of your choice.
 Typically, doing a `Dockerfile` build for production on the fly is discouraged as `Docker hosts` may not have access to Internet or may face other security, permission or unforeseen build issues.
 
 ***Note***:
-When a build is initiated on more than one engines on a given `Docker host`, the build process is serialized so that the same image is not being build twice.
+When a `Dockerfile` build is initiated on more than one engines on a given `Docker host` for a Silver Fabric component, the build process is serialized so that the same image is not being build twice.
 
 Pulling images from `Docker Hub` or private registries
 ------------------------------------------------------
@@ -365,4 +365,6 @@ Note: If you are using `COPY` or `ADD` commands in the Dockerfile, you can add t
 [Container-related metadata]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_enabler_activationInfo.gif
 
 [post_activations.cmds]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_post_activation_process_injections.gif
+
+[Puppet and Chef support]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/sf_5.7_puppet_chef_support.gif
 
