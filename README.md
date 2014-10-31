@@ -215,6 +215,12 @@ Silver Fabric Engine activation info from Docker container
 ----------------------------------------------------------
 [Container-related metadata] info are collected as activation info by the engine that proxy the lifecycle of the associated Docker it manages. They are prefixed by **docker_**.
 
+Component lifecycle notifications
+---------------------------------
+While Silver Fabric `component dependency rule` allows you to specify a stack `X` where component `A` depends on `B`,`C`,`D`,etc during the stack activation or shutdown, Silver Fabric's [component notification feature] allows any component `A` to register notifications related to any other component's lifecycle. This is especially helpful with respect to its dependent components `B`,`C`,`D` which may restart or failed while the depending component `A` is runnning.
+With this notification, component `A` can be routed or bind to different dependent components or take the necessary course of action.
+
+
 
 Runtime Context Variables
 --------------------------------------
@@ -369,3 +375,4 @@ Note: If you are using `COPY` or `ADD` commands in the Dockerfile, you can add t
 
 [Puppet and Chef support]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/sf_5.7_puppet_chef_support.gif
 
+[component notification feature]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/sf_component_notifications.gif
