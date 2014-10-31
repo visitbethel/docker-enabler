@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,8 +28,15 @@ import org.fabrician.enabler.util.DockerfileBuildLock;
 import org.fabrician.enabler.util.ExecCmdProcessInjector;
 import org.fabrician.enabler.util.RunCmdAuxiliaryOptions;
 
+import com.datasynapse.fabric.admin.info.NotificationEngineInfo;
 import com.datasynapse.fabric.common.ActivationInfo;
+import com.datasynapse.fabric.common.ArchiveActivationInfo;
 import com.datasynapse.fabric.common.RuntimeContextVariable;
+import com.datasynapse.fabric.common.message.ArchiveLocator;
+import com.datasynapse.fabric.container.AbstractContainer;
+import com.datasynapse.fabric.container.ArchiveDetail;
+import com.datasynapse.fabric.container.ArchiveManagement;
+import com.datasynapse.fabric.container.ArchiveProvider;
 import com.datasynapse.fabric.container.ExecContainer;
 import com.datasynapse.fabric.container.Feature;
 import com.datasynapse.fabric.container.ProcessWrapper;
@@ -53,7 +61,7 @@ import com.google.common.io.BaseEncoding;
  * </p>
  * 
  */
-public class DockerContainer extends ExecContainer {
+public class DockerContainer extends ExecContainer implements ArchiveManagement,ArchiveProvider{
     private static final long serialVersionUID = 5194159591618328739L;
     private static final String BIND_ON_ALL_LOCAL_ADDRESSES_VAR = "BIND_ON_ALL_LOCAL_ADDRESSES";
     private static final String DOCKER_CONTAINER_BIND_ADDRESS_VAR = "DOCKER_CONTAINER_BIND_ADDRESS";
@@ -623,6 +631,59 @@ public class DockerContainer extends ExecContainer {
 
     public String dockerContainerInfo() {
         return "[" + dockerContainerName() + "][" + dockerContainerId() + "]";
+    }
+
+    //If ArchiveManagementFeatureInfo is supported, then ArchiveManagement methods must scripted
+    // Otherwise it got intercepted here and UnsupportedOperationException is thrown.
+    public void archiveDeploy(String archiveName, List<ArchiveLocator> archiveLocators, Properties properties) throws Exception {
+        throw new UnsupportedOperationException("Method archiveDeploy(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+    }
+
+    
+    public ArchiveActivationInfo archiveStart(String archiveName, Properties properties) throws Exception {
+        throw new UnsupportedOperationException("Method archiveStart(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+    }
+
+   
+    public ArchiveActivationInfo archiveScaleUp(String archiveName, List<ArchiveLocator> archiveLocators) throws Exception {
+        throw new UnsupportedOperationException("Method archiveScaleUp(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+    }
+
+    public void archiveScaleDown(String archiveName, String archiveId) throws Exception {
+        throw new UnsupportedOperationException("Method archiveScaleDown(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        
+    }
+
+    public void archiveStop(String archiveName, String archiveId, Properties properties) throws Exception {
+        throw new UnsupportedOperationException("Method archiveStop(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+    }
+
+    public void archiveUndeploy(String archiveName, Properties properties) throws Exception {
+        throw new UnsupportedOperationException("Method archiveUndeploy(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+    }
+
+    public ArchiveDetail[] archiveDetect() throws Exception {
+        throw new UnsupportedOperationException("Method archiveDetect() is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+    }
+
+    public String[] urlDetect() throws Exception {
+        throw new UnsupportedOperationException("Method urlDetect() is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+    }
+
+    // For Continuous Deployment
+    public File getArchive(String archiveName) throws Exception {
+        throw new UnsupportedOperationException("Method getArchive(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveProvider.class.getName() + "' in the SDK API.");
+    }
+    
+    @Override
+    public File resolveArchive(String deploymentArchiveName, String url, Properties properties, String componentName, File destDir) throws Exception {
+        throw new UnsupportedOperationException("Method resolveArchive(...) is not implemented in scripting or this Enabler. Please see abstract class '" + AbstractContainer.class.getName() + "' in the SDK API.");
+    }
+
+    // For ComponentNotification
+    @Override
+    public void componentNotification(String componentName, List<NotificationEngineInfo> notificationEngineInfo) {
+        throw new UnsupportedOperationException("Method componentNotification(...) is not implemented in scripting or this Enabler. Please see abstract class '" + AbstractContainer.class.getName() + "' in the SDK API.");
     }
 
 }

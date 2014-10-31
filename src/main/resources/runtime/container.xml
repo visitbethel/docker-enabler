@@ -48,6 +48,19 @@
         
 		<property name="infoClass" value="org.fabrician.enabler.DockerLoggingInfo"/>
 	</supportedFeature>
+	
+	<supportedFeature class="com.datasynapse.fabric.container.Feature">
+      <property name="name" value="Component Notification Support"/>
+      <property name="description" value="Support for Component Notifications"/>
+      <property name="infoDescription" value="Support for receiving notifications when other components of interest are going to be activated (during the current allocation cycle), currently activating, running, deactivated,  failed activating, failed deactivating or the engine running a component goes away"/>
+      <property name="infoClass" value="com.datasynapse.fabric.domain.featureinfo.ComponentNotificationFeatureInfo"/>
+    </supportedFeature>
+    
+    <supportedFeature class="com.datasynapse.fabric.container.Feature">
+        <property name="name" value="Archive Management Support"/>
+        <property name="description" value="Support for managing J2EE archives if Docker container represents a J2EE-platform"/>
+        <property name="infoClass" value="com.datasynapse.fabric.domain.featureinfo.ArchiveManagementFeatureInfo"/>
+    </supportedFeature>
 
 	<runtimeContextTemplate class="DefaultRuntimeContext">
 		<!-- JDK-related for any usage of third-party Java library-->
@@ -270,9 +283,6 @@
 			<property name="description" value="Maxiumum secs to wait before a force stop is used to shutdown a Docker container"/>
 		</variable>
 
-		<!-- Public host ports to Docker container mapping-->
-
-
 		<!--  SF-specific funtionality-->
 		<variable class="RuntimeContextVariable">
 			<property name="name" value="BIND_ON_ALL_LOCAL_ADDRESSES"/>
@@ -291,6 +301,12 @@
 			<property name="value" value="true"/>
 			<property name="type" value="Environment"/>
 			<property name="description" value="Whether to delete the Docker runtime directory on shutdown. This includes removing the Docker container."/>
+		</variable>
+		<variable class="RuntimeContextVariable">
+			<property name="name" value="COMPONENT_INSTANCE_NUMBERING_ENABLED"/>
+			<property name="value" value="false"/>
+			<property name="type" value="String"/>
+			<property name="description" value="Allows distinct component instance numbers assignment and ensuring numbers are reused by delaying activations. When enabled, activations are skipped if a component with the same name as the one needing activation is currently deactivating or reactivating. Once all the components that were deactivating/reactivating are done any pending activations will be sent during the next allocation cycle."/>
 		</variable>
 
 	</runtimeContextTemplate>
