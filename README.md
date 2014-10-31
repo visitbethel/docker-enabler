@@ -229,7 +229,7 @@ Variable Name|Default value|Type|Description|Export|Auto Increment
 **JDK_VERSION**|1.7|String|The version of the required JDK|false|None
 **JAVA_HOME**|${GRIDLIB_JAVA_HOME}|Environment|The Java home directory|false|None
 **DELETE_RUNTIME_DIR_ON_SHUTDOWN**|true|Environment|Whether to delete the Docker runtime directory on shutdown. This includes removing the Docker container.|false|None
-**COMPONENT_INSTANCE_NUMBERING_ENABLED**|false|String|Allows distinct component instance numbers assignment and ensuring numbers are reused by delaying activations. When enabled, activations are skipped if a component with the same name as the one needing activation is currently deactivating or reactivating. Once all the components that were deactivating/reactivating are done any pending activations will be sent during the next allocation cycle.|false|None
+**COMPONENT_INSTANCE_NUMBERING_ENABLED**|false|String|Allows distinct component instance numbers assignment and ensuring numbers are reused by delaying activations.|false|None
 **DOCKER_BASE_DIR**|${container.getWorkDir()}/docker|Environment|Base parent dir containing Dockerfile build context dir, logs dir and stats dir|false|None
 **DOCKER_CONTEXT_DIR**|${DOCKER_BASE_DIR}/docker_context|Environment|Dir containing the Dockerfile and associated dirs and files to be used in image build.|false|None
 **DOCKER_LOGS_DIR**|${DOCKER_BASE_DIR}/docker_logs|Environment|Host dir mounted for dumping any logs data from within Docker containers|false|None
