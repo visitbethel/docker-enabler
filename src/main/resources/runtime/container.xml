@@ -14,6 +14,7 @@
 	<property name="version" value="1.0"/>
 	<property name="distributionVersion" value="${distribution.version}"/>
 	<property name="supportedDomainType" value="Default:${component.type.version}"/>
+	<property name="supportedDomainType" value="J2EE:${component.type.version}"/>
 	<property name="blocking" value="true"/>
 	<property name="shutdownTimeout" value="300000"/>
 	<property name="maxBuildLockRetries" value="20"/>
