@@ -208,7 +208,7 @@ ${MYSQL_Swarm.get("JDBC_URL")}
 ***Note***:
 A service discovery `Varible provider` maybe implemented using a lightweight distributed key value store like [etcd](https://coreos.com/using-coreos/etcd/) with each `Docker hosts` serving as a `etcd node`.
 
-See ```AbstractVariableProvider``` and ```AbstractDynamicVariableProvider``` classes in the `TIBCO Silver Fabric SDK API 5.7` for details.
+See ```AbstractVariableProvider``` and ```AbstractDynamicVariableProvider``` in the `TIBCO Silver Fabric SDK API 5.7` for details.
 
 
 Silver Fabric Engine activation info from Docker container
@@ -220,6 +220,13 @@ Component lifecycle notifications
 While Silver Fabric `component dependency rule` allows you to specify a stack `X` where component `A` depends on `B`,`C`,`D`,etc during the stack activation or shutdown, Silver Fabric's [component notification feature] allows any component `A` to register notifications related to any other component's lifecycle. This is especially helpful with respect to its dependent components `B`,`C`,`D` which may restart or failed while the depending component `A` is runnning.
 With this notification, component `A` can be routed or bind to different dependent components or take the necessary course of action.
 
+See ```ComponentNotificationFeatureInfo``` in the `TIBCO Silver Fabric SDK API 5.7` for details.
+
+Continuous Deployment and archive scaling
+------------------------------------------
+Continuous J2EE archives deployment and associated `microscaling` of archives for a running Silver Fabric component can be brought about by using `ArchiveManagementFeatureInfo`, in conjunction with implementation of scripting support for interface `ArchiveManagement`.
+
+See `TIBCO Silver Fabric SDK API, version 5.7` for more details
 
 
 Runtime Context Variables
