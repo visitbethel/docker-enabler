@@ -73,7 +73,7 @@ So they can both be used in a complementary way.
 
 We also do not support Docker `--link` and `--volumes-from` features to allow instead the use of Silver Fabric's `component dependency management` to be used to link running processes across different hosts by `exporting runtime context variables`. For example, a Docker container running on host A could be "linked" to a Silver Fabric gridlib application process running on host B by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only.
 
-Since a Docker container are in essence a self-contained `blackbox`, useful Silver Fabric functionality can only be extended to the container via  scripting support or by extending this enabler. This forms the "binding" from Silver Fabric world to the Docker container world.
+Since a Docker container is in essence a self-contained `blackbox`, Silver Fabric functionality and features can only be binded on to the container indirectly via scripting support.
 
 Docker container instantiation limit
 -------------------------------------
