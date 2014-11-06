@@ -301,6 +301,7 @@ Runtime context variables names that are prefixed with [Special directives] allo
 
 Prefix directive|Purpose|Variable name syntax|Variable value
 ---|---|---|---
+**!PORT_EXPOSE_**|Expose a private port internally|`!PORT_EXPOSE_`xxxx|\<`internal port`\>
 **!PORT_MAP_** | Map an external host port to an internally exposed Docker container port|`!PORT_MAP_`xxxx|\<`external port`\>:\<`internal port`\>
 **!VOL_MAP_**| Mount an external host volume to an internal Docker container volume|`!VOL_MAP_`xxxx|\<`external volume path`\>:\<`internal volume path`\>:[`rw`,`ro`]
 **!ENV_VAR_**| Inject an environment variable into the Docker container|`!ENV_VAR_`xxxx|`key=value`, `key=`, `key`
