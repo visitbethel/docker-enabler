@@ -70,6 +70,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     private static final String USE_SUDO_VAR = "USE_SUDO";
     private static final String REUSE_CONTAINER_VAR = "REUSE_CONTAINER";
 
+    private static final String PORT_EXPOSE_PREFIX = "!PORT_EXPOSE_"; // all context vars that starts with "!PORT_EXPOSE_" are reckoned to be a private container ports to be exposed by convention
     private static final String PORT_MAP_PREFIX = "!PORT_MAP_"; // all context vars that starts with "!PORT_MAP_" are reckoned to be a host-to-container ports mapping by convention
     private static final String VOL_MAP_PREFIX = "!VOL_MAP_"; // all context vars that starts with "!VOL_MAP_" are reckoned to be a host-to-container volume mapping by convention
     private static final String ENV_VAR_PREFIX = "!ENV_VAR_";// all context vars that starts with "!ENV_VAR" are reckoned to be container enviromental variables mapping by convention
@@ -80,6 +81,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     private static final String EXEC_CMD_DELAY_VAR = "EXEC_CMD_DELAY";
     private static final String EXEC_CMD_ENABLED_VAR = "EXEC_CMD_ENABLED";
 
+    private static final String DOCKER_PORTS_EXPOSED_VAR = "DOCKER_PORTS_EXPOSED";
     private static final String DOCKER_PORT_MAPPINGS_VAR = "DOCKER_PORT_MAPPINGS";
     private static final String DOCKER_VOL_MAPPINGS_VAR = "DOCKER_VOL_MAPPINGS";
     private static final String DOCKER_ENVS_VAR = "DOCKER_ENVS";
@@ -162,6 +164,8 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
 
         additionalVariables.add(new RuntimeContextVariable(DOCKER_CONTAINER_TAG_VAR, dockerContainerTag, RuntimeContextVariable.ENVIRONMENT_TYPE));
         additionalVariables.add(new RuntimeContextVariable(DOCKER_CONTAINER_BIND_ADDRESS_VAR, dockerBindAddress, RuntimeContextVariable.STRING_TYPE));
+        // expose any additional private ports
+        buildDockerContainerExposedPorts(additionalVariables);
         // construct a host ports to docker container ports mappings
         buildHostToDockerContainerPortMappings(additionalVariables);
         // construct a host vols to docker container vol mappings
@@ -174,6 +178,27 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
         buildDockerContainerSecurityOptions(additionalVariables);
         super.doInit(additionalVariables);
         getEngineLogger().fine("Invoked doInit()...");
+    }
+
+    private void buildDockerContainerExposedPorts(List<RuntimeContextVariable> additionalVariables) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < getRuntimeContext().getVariableCount(); i++) {
+            RuntimeContextVariable var = getRuntimeContext().getVariable(i);
+            if (var.getTypeInt() != RuntimeContextVariable.OBJECT_TYPE) {
+                String name = var.getName();
+                if (!name.startsWith(PORT_EXPOSE_PREFIX)) {
+                    continue;
+                }
+                
+                String currentValue = StringUtils.trimToEmpty((String) var.getValue());
+                if (currentValue.isEmpty()) {
+                    continue;
+                } 
+                sb.append(" --expose ").append(currentValue);
+            }
+        }
+       
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_PORTS_EXPOSED_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private void buildHostToDockerContainerPortMappings(List<RuntimeContextVariable> additionalVariables) throws Exception {
@@ -200,7 +225,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
         if (!badPortMap.isEmpty()) {
             throw new Exception("Bad host-to-docker container port mappings detected :\n" + badPortMap);
         }
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_PORT_MAPPINGS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_PORT_MAPPINGS_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private boolean isHostPortVacant(final String varName, final String varValue) {
@@ -233,7 +258,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 sb.append(" -v ").append(currentValue);
             }
         }
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_VOL_MAPPINGS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_VOL_MAPPINGS_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private void buildDockerContainerEnvs(List<RuntimeContextVariable> additionalVariables) throws Exception {
@@ -257,12 +282,12 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 }
             }
         }
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_ENVS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_ENVS_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private void buildDockerContainerAuxiliaryOptions(List<RuntimeContextVariable> additionalVariables) throws Exception {
         String options = RunCmdAuxiliaryOptions.buildAll(getRuntimeContext());
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_AUXILIARY_OPTIONS_VAR, options, RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_AUXILIARY_OPTIONS_VAR, resolveVariables(options), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private void buildDockerContainerSecurityOptions(List<RuntimeContextVariable> additionalVariables) throws Exception {
@@ -281,7 +306,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 sb.append(" --security-opt ").append(currentValue);
             }
         }
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_SECURITY_OPTIONS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_SECURITY_OPTIONS_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     @Override
@@ -577,22 +602,22 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     }
 
     private String resolveToString(String runtimeContextVariableName) throws Exception {
-        String val = StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName));
+        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return val;
     }
 
     private int resolveToInteger(String runtimeContextVariableName) throws Exception {
-        String val = StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName));
+        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return NumberUtils.toInt(val);
     }
 
     private boolean resolveToBoolean(String runtimeContextVariableName) throws Exception {
-        String val = StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName));
+        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return BooleanUtils.toBoolean(val);
     }
 
     private File resolveToFile(String runtimeContextVariableName) throws Exception {
-        String val = StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName));
+        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return new File(val).getCanonicalFile();
     }
 
