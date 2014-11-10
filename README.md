@@ -367,14 +367,81 @@ How Tos
 Note: If you are using `COPY` or `ADD` commands in the Dockerfile, you can add the files to be copied/added in those commands as content files in the same relative content dir above.
 ```
 
+  ***(5) How do I collect JMX stats from a J2EE Docker container?***
+  
+  Basically, you have 2 main choices:
+  - work with [JMX] directly
+    This is harder since you may need take into account `RMI` idiosyncrasies and scripting in raw JMX API.
+  - work with a [JMX-HTTP Bridge]
+    This is easier and this enabler bundles `Jolokia JMX-HTTP Bridge version 1.2.2` Java client which allows you to  script in an easier API, especially if you need to deal with complex JMX data types.
+  
+  Assume that you have a [Jolokia-enabled J2EE image](https://registry.hub.docker.com/u/fabric8/tomcat-8.0/),you need to supply a statistic script in Jython, JRuby or ECMAScript and implement a `getStatistic` method and runtime context variable `JOLOKIA_URL` that binds to the Jolokia url:
+```python
+from org.jolokia.client import J4pClient;
+from org.jolokia.client.request import J4pReadRequest;
+from org.jolokia.client.request import J4pReadResponse;
+from javax.management import ObjectName;
 
+client = None;
+
+def getRcv(varName):
+    rcv = runtimeContext.getVariable(varName)
+    if rcv == None:
+        return None;
+    else:
+        return rcv.getValue();
+    
+def getClient():
+    global client
+    if client == None :
+        url=getRcv("JOLOKIA_URL");
+        client =J4pClient(url);
+    return client;
+        
+    
+    
+def usedMemory():
+    obj_name= ObjectName("java.lang:type=Memory");
+    request = J4pReadRequest(obj_name,["HeapMemoryUsage"]);
+    request.setPath("used");
+    response = getClient().execute(request);
+    return str(response.get(0).getValue());
+
+def peakThreadCount():
+    obj_name=ObjectName("java.lang:type=Threading");
+    request = J4pReadRequest(obj_name,["PeakThreadCount"]);
+    response = getClient().execute(request);
+    return str(response.get(0).getValue());
+
+def uptime():
+    obj_name = ObjectName("java.lang:type=Runtime");
+    request = J4pReadRequest(obj_name,["Uptime"]);
+    response = getClient().execute(request);
+    return str(response.get(0).getValue());
+    
+def getStatistic(statName):
+    statValue = 0.0;
+    if statName == "USED_MEMORY" :
+        statValue=usedMemory();
+    elif statName == "PEAK_THREAD_COUNT":
+        statValue = peakThreadCount();
+    elif statName == "UPTIME":
+        statValue = uptime();
+    else:
+        logger.warning('Unknown statistic: ' + statName);
+        
+    return statValue;
+  
+```
+  
 
 [Install Docker]:https://docs.docker.com/installation/
 [Password-less sudo]:https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access
 [Configure Docker Remote API]:http://www.virtuallyghetto.com/2014/07/quick-tip-how-to-enable-docker-remote-api.html
 [docker logs]:https://docs.docker.com/reference/commandline/cli/#logs
 [Docker and SELinux]:http://www.projectatomic.io/docs/docker-and-selinux/
-
+[JMX]:http://ptmccarthy.github.io/2014/07/24/remote-jmx-with-docker/
+[JMX-HTTP Bridge]:http://www.jolokia.org/
 [Resource Preference rule]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_resource_preference.gif
 
 [Special directives]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_runtime_context_vars.gif
