@@ -190,7 +190,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                     continue;
                 }
                 
-                String currentValue = StringUtils.trimToEmpty((String) var.getValue());
+                String currentValue = resolveToString(name);
                 if (currentValue.isEmpty()) {
                     continue;
                 } 
@@ -198,7 +198,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
             }
         }
        
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_PORTS_EXPOSED_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_PORTS_EXPOSED_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private void buildHostToDockerContainerPortMappings(List<RuntimeContextVariable> additionalVariables) throws Exception {
@@ -211,7 +211,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!name.startsWith(PORT_MAP_PREFIX)) {
                     continue;
                 }
-                String currentValue = StringUtils.trimToEmpty((String) var.getValue());
+                String currentValue = resolveToString(name);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
@@ -251,14 +251,14 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!name.startsWith(VOL_MAP_PREFIX)) {
                     continue;
                 }
-                String currentValue = StringUtils.trimToEmpty((String) var.getValue());
+                String currentValue = resolveToString(name);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
                 sb.append(" -v ").append(currentValue);
             }
         }
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_VOL_MAPPINGS_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_VOL_MAPPINGS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private void buildDockerContainerEnvs(List<RuntimeContextVariable> additionalVariables) throws Exception {
@@ -271,7 +271,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                     continue;
                 }
 
-                String currentValue = StringUtils.trimToEmpty((String) var.getValue());
+                String currentValue = resolveToString(name);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
@@ -282,7 +282,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 }
             }
         }
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_ENVS_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_ENVS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     private void buildDockerContainerAuxiliaryOptions(List<RuntimeContextVariable> additionalVariables) throws Exception {
@@ -299,14 +299,14 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!name.startsWith(SECURITY_OPTION_PREFIX)) {
                     continue;
                 }
-                String currentValue = StringUtils.trimToEmpty((String) var.getValue());
+                String currentValue = resolveToString(name);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
                 sb.append(" --security-opt ").append(currentValue);
             }
         }
-        additionalVariables.add(new RuntimeContextVariable(DOCKER_SECURITY_OPTIONS_VAR, resolveVariables(sb.toString()), RuntimeContextVariable.ENVIRONMENT_TYPE));
+        additionalVariables.add(new RuntimeContextVariable(DOCKER_SECURITY_OPTIONS_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
     @Override
