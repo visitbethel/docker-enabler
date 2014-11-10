@@ -197,7 +197,7 @@
 		</variable>
 		<variable class="RuntimeContextVariable">
 			<property name="name" value="BUILD_TIMEOUT"/>
-			<property name="value" value="200"/>
+			<property name="value" value="500"/>
 			<property name="type" value="String"/>
 			<property name="description" value="Max number of secs a Dockerfile build is allowed for completion before terminated."/>
 		</variable>
