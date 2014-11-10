@@ -125,21 +125,5 @@ def getStatistic(statName):
 ```
   
 
-[Install Docker]:https://docs.docker.com/installation/
-[Password-less sudo]:https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access
-[Configure Docker Remote API]:http://www.virtuallyghetto.com/2014/07/quick-tip-how-to-enable-docker-remote-api.html
-[docker logs]:https://docs.docker.com/reference/commandline/cli/#logs
-[Docker and SELinux]:http://www.projectatomic.io/docs/docker-and-selinux/
 [JMX]:http://ptmccarthy.github.io/2014/07/24/remote-jmx-with-docker/
 [JMX-HTTP Bridge]:http://www.jolokia.org/
-[Resource Preference rule]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_resource_preference.gif
-
-[Special directives]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_runtime_context_vars.gif
-
-[Container-related metadata]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_enabler_activationInfo.gif
-
-[post_activations.cmds]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/docker_post_activation_process_injections.gif
-
-[Puppet and Chef support]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/sf_5.7_puppet_chef_support.gif
-
-[component notification feature]:https://github.com/fabrician/docker-enabler/blob/master/src/main/resources/images/sf_component_
