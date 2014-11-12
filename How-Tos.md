@@ -123,7 +123,31 @@ def getStatistic(statName):
     return statValue;
   
 ```
+  ***(6) How do I script a component notification when one or dependent components is down?***
   
+  First, you need to register one or more dependent components from the view point of the listening component, using `ComponentNotificationFeature`. Then add a script implementating the `componentNotification` method like so:
+  ```python
+from com.datasynapse.fabric.admin.info import NotificationEngineInfo;
+from com.datasynapse.fabric.admin import AdminManager;
+
+def componentNotification(componentName, notificationEngineInfoList):
+    logger.info("Notification from component '" + componentName + "'.");
+    logger.info("Component engines located at :" + notificationEngineInfoList.toString());
+    engineAdmin=AdminManager.getEngineAdmin();
+    n= NotificationEngineInfo();
+    for n in notificationEngineInfoList:
+        engine_id=n.getEngineId();
+        instance=n.getInstance();
+        info=engineAdmin.getEngineInfo(engine_id,instance);
+        alloc=info.getAllocationInfo();
+        props=alloc.getProperties();
+        logger.info("--------------properties are -----------------------");
+        for p in props:
+           logger.info(p.getName() + "=" + p.getValue())
+        logger.info("-----------------------------------------------------");
+        
+  ```
+Note: You may use the class `AdminManager` to query for any additional information from the Silver Fabric broker.
 
 [JMX]:http://ptmccarthy.github.io/2014/07/24/remote-jmx-with-docker/
 [JMX-HTTP Bridge]:http://www.jolokia.org/
