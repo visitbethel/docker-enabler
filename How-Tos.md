@@ -149,6 +149,26 @@ def componentNotification(componentName, notificationEngineInfoList):
   ```
 Note: You may use the class `AdminManager` to query for any additional information from the Silver Fabric broker.
 
+***(7) How can I manage the lifecycle of an J2EE archive(.WAR,.EAR) for a J2EE Docker container?***
+
+First make sure that you configure your component with `ArchiveManagementFeature` enabled and as a J2EE component.
+Next, since a Docker container is a blackbox, you need to implement 1 set of mandatory and 1 optional set of scripting "hooks" methods from the interface `ArchiveManagement` from the `TIBCO Silver Fabric SDK API, version 5.7`:
+
+- Archive lifecycle set(mandatory):
+  - archiveDeploy
+  - archiveStart
+  - archiveStop
+  - archiveUndeploy
+  - archiveDetect
+  - urlDetect
+  
+- Archive microscaling set(optional):
+  - archiveScaleUp
+  - archiveScaleDown
+
+**Note**: In addition, if you are doing Archive microscaling, you may need also to implement the interface `ArchiveProvider` if you are using certain J2EE platform, so that the Silver Fabric Broker can cached your archives as an "archive truth source" for scaling across engines. Each of above scripting hook set of methods can be implemented in separate scripting files.
+
+
 [JMX]:http://ptmccarthy.github.io/2014/07/24/remote-jmx-with-docker/
 [JMX-HTTP Bridge]:http://www.jolokia.org/
 [Tomcat8-Jolokia]:https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_tomcat8_jolokia_rcv.gif
