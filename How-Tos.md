@@ -65,7 +65,7 @@ Note: If you are using `COPY` or `ADD` commands in the Dockerfile, you can add t
   - work with a [JMX-HTTP Bridge]
     This is easier and this enabler bundles `Jolokia JMX-HTTP Bridge version 1.2.2` Java client which allows you to  script in an easier API, especially if you need to deal with complex JMX data types.
   
-  Assume that you have a [Jolokia-enabled J2EE image](https://registry.hub.docker.com/u/fabric8/tomcat-8.0/),you need to supply a statistic script in Jython, JRuby or ECMAScript and implement a `getStatistic` method and runtime context variable `JOLOKIA_URL` that binds to the Jolokia url:
+  Assume that you have a [Jolokia-enabled J2EE image](https://registry.hub.docker.com/u/fabric8/tomcat-8.0/),you need to supply a statistic script in Jython, JRuby or ECMAScript and implement a `getStatistic` method and runtime context variable `JOLOKIA_URL` that binds to the [Tomcat8-Jolokia] url:
 ```python
 from org.jolokia.client import J4pClient;
 from org.jolokia.client.request import J4pReadRequest;
@@ -125,7 +125,7 @@ def getStatistic(statName):
 ```
   ***(6) How do I script a component notification when one or more dependent components is down?***
   
-  First, you need to register one or more dependent components from the view point of the listening component, using `ComponentNotificationFeature`. Then add a script implementating the `componentNotification` method like so:
+  First, you need to register one or more dependent components from the view point of the listening component, using `ComponentNotificationFeature`. Then add a script implementing the `componentNotification` method like so:
   ```python
 from com.datasynapse.fabric.admin.info import NotificationEngineInfo;
 from com.datasynapse.fabric.admin import AdminManager;
@@ -151,3 +151,4 @@ Note: You may use the class `AdminManager` to query for any additional informati
 
 [JMX]:http://ptmccarthy.github.io/2014/07/24/remote-jmx-with-docker/
 [JMX-HTTP Bridge]:http://www.jolokia.org/
+[Tomcat8-Jolokia]:https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_tomcat8_jolokia_rcv.gif
