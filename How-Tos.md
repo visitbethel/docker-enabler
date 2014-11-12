@@ -18,7 +18,7 @@ How Tos
 
 ```
   
-  First, make sure the host directory is created first.
+  First, make sure the host directory is created first or exists first.
   Next, create a runtime context variable of type "String" with name prefixed by "!VOL_MAP_" like so:
   
   "!VOL_MAP_logs=/logs:/my_logs:rw"
@@ -123,7 +123,7 @@ def getStatistic(statName):
     return statValue;
   
 ```
-  ***(6) How do I script a component notification when one or dependent components is down?***
+  ***(6) How do I script a component notification when one or more dependent components is down?***
   
   First, you need to register one or more dependent components from the view point of the listening component, using `ComponentNotificationFeature`. Then add a script implementating the `componentNotification` method like so:
   ```python
