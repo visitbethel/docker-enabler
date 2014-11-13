@@ -18,17 +18,17 @@ Highlights
 
 Setup
 ------
-- 1. Do a pull of Tomcat 8 with Jolokia JMX Bridge via docker command:
+- (1) Do a pull of Tomcat 8 with Jolokia JMX Bridge via docker command:
 
     ```bash
        docker pull fabric8/tomcat-8.0
     ```
-- 2. Download the `SilverFabricCLI.tar.gz` library from the Broker and unzip into a directory.
-- 3. Download and unzip `S_Tomcat8-ant-package.zip`  into the same directory as above
-- 4. Run the Ant task `build.xml` against a Silver Fabric Broker with this `Silver Fabric Docker Enabler` installed
+- (2) Download the `SilverFabricCLI.tar.gz` library from the Broker and unzip into a directory.
+- (3) Download and unzip `S_Tomcat8-ant-package.zip`  into the same directory as above
+- (4) Run the Ant task `build.xml` against a Silver Fabric Broker with this `Silver Fabric Docker Enabler` installed
 
    ```ant
       ant -f build.xml
    ```
-- 5. Run the stack `S_Tomcat8` via the Silver Fabric Adnin UI.
+- (5) Run the stack `S_Tomcat8` via the Silver Fabric Adnin UI.
 
