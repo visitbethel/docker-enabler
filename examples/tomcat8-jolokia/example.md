@@ -30,7 +30,7 @@ Setup
    ```ant
       ant -f build.xml
    ```
-- (5) Run the stack `S_Tomcat8` via the Silver Fabric Adnin UI.
+- (5) Run the stack `S_Tomcat8` via the Silver Fabric Admin UI.
 - (6) Access the Tomcat URL : 
       
       ```bash
