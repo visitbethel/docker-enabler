@@ -9,7 +9,7 @@ platform.
 Highlights
 ----------
  - shows how to map Docker host ports and volumes to internal Docker container ports and volumes
- - automatic Http port increments across Silver Fabric engines for Tomcat8 and Jolokia ports
+ - automatic Http port increments across Silver Fabric engines for Ghost port
  - shows usage of Silver Fabric runtime context variables and variable substitutions
 
 Setup
@@ -27,5 +27,12 @@ Setup
       ant -f build.xml
    ```
 - (5) Run the stack `MyGhost` via the Silver Fabric Adnin UI.
-- (6) Access the Tomcat URL : http:<Broker host>:8080/tomcat8
+
+- (6) Access the Ghost blog URL : 
+
+      ```
+      http://broker-host:8080/ghost  for blog , or
+      http://broker-host:8080/ghost/ghost for admin
+      
+      ```
       Note: This should redirect you to the real endpoint where the container is running.
