@@ -10,7 +10,7 @@ Highlights
 ----------
  - shows how to map Docker host ports and volumes to internal Docker container ports and volumes
  - automatic Http port increments across Silver Fabric engines for Ghost port
- - shows usage of Silver Fabric runtime context variables and variable substitutions
+ - shows usage of [Silver Fabric runtime context variables and variable substitutions](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_GhostBlog_rcv.gif)
 
 Setup
 ------
