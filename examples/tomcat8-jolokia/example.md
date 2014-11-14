@@ -10,7 +10,7 @@ Highlights
 ----------
  - shows how to map Docker host ports and volumes to internal Docker container ports and volumes
  - automatic Http port increments across Silver Fabric engines for Tomcat8 and Jolokia ports
- - shows usage of Silver Fabric runtime context variables and variable substitutions
+ - shows usage of [Silver Fabric runtime context variables and variable substitutions](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_tomcat8_jolokia_rcv.gif)
  - shows Tomcat8 performance stats collections via scripting to Jolokia client API
  - shows Tomcat8 logs checkpoint and log collections
  - Shows `ComponentNotificationFeature` by listening on component `J2EE Example` lifecycle via scripting
