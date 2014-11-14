@@ -26,7 +26,7 @@ Setup
    ```ant
       ant -f build.xml
    ```
-- (5) Run the stack `MyGhost` via the Silver Fabric Adnin UI.
+- (5) Run the stack `MyGhost` via the Silver Fabric Admin UI.
 
 - (6) Access the Ghost blog URL : 
 
