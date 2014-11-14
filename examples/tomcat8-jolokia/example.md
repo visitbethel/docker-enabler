@@ -31,6 +31,9 @@ Setup
       ant -f build.xml
    ```
 - (5) Run the stack `S_Tomcat8` via the Silver Fabric Adnin UI.
-- (6) Access the Tomcat URL : http::8080/tomcat8
-
+- (6) Access the Tomcat URL : 
+      
+      ```bash
+        http::8080/tomcat8
+      ```
       ***Note***: This should redirect you to the real endpoint where the container is running.
