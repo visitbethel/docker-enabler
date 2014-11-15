@@ -1,4 +1,4 @@
-Ghost Node.js Docker container
+Redis Docker container
 =========================================================
 
 Introduction
