@@ -61,7 +61,7 @@ import com.google.common.io.BaseEncoding;
  * </p>
  * 
  */
-public class DockerContainer extends ExecContainer implements ArchiveManagement,ArchiveProvider{
+public class DockerContainer extends ExecContainer implements ArchiveManagement, ArchiveProvider {
     private static final long serialVersionUID = 5194159591618328739L;
     private static final String BIND_ON_ALL_LOCAL_ADDRESSES_VAR = "BIND_ON_ALL_LOCAL_ADDRESSES";
     private static final String DOCKER_CONTAINER_BIND_ADDRESS_VAR = "DOCKER_CONTAINER_BIND_ADDRESS";
@@ -189,15 +189,15 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!name.startsWith(PORT_EXPOSE_PREFIX)) {
                     continue;
                 }
-                
+
                 String currentValue = resolveToString(name);
                 if (currentValue.isEmpty()) {
                     continue;
-                } 
+                }
                 sb.append(" --expose ").append(currentValue);
             }
         }
-       
+
         additionalVariables.add(new RuntimeContextVariable(DOCKER_PORTS_EXPOSED_VAR, sb.toString(), RuntimeContextVariable.ENVIRONMENT_TYPE));
     }
 
@@ -623,19 +623,21 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
 
     private void validateHttpFeature() throws Exception {
         httpFeatureInfo = (HttpFeatureInfo) ContainerUtils.getFeatureInfo(Feature.HTTP_FEATURE_NAME, this, getCurrentDomain());
-
-        boolean httpEnabled = isHttpEnabled();
-        boolean httpsEnabled = isHttpsEnabled();
-        if (!httpEnabled && !httpsEnabled) {
-            throw new Exception("HTTP or HTTPS must be enabled in the Domain");
+        if (httpFeatureInfo != null) {
+            boolean httpEnabled = isHttpEnabled();
+            boolean httpsEnabled = isHttpsEnabled();
+            if (!httpEnabled && !httpsEnabled) {
+                throw new Exception("HTTP or HTTPS must be enabled in the Domain");
+            }
+            if (httpEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTP_PORT_VAR)) {
+                throw new Exception("HTTP is enabled but the " + HttpFeatureInfo.HTTP_PORT_VAR + " runtime context variable is not set");
+            }
+            if (httpsEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTPS_PORT_VAR)) {
+                throw new Exception("HTTPS is enabled but the " + HttpFeatureInfo.HTTPS_PORT_VAR + " runtime context variable is not set");
+            }
+        }else{
+            getEngineLogger().warning("HTTP Feature is disabled");
         }
-        if (httpEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTP_PORT_VAR)) {
-            throw new Exception("HTTP is enabled but the " + HttpFeatureInfo.HTTP_PORT_VAR + " runtime context variable is not set");
-        }
-        if (httpsEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTPS_PORT_VAR)) {
-            throw new Exception("HTTPS is enabled but the " + HttpFeatureInfo.HTTPS_PORT_VAR + " runtime context variable is not set");
-        }
-
     }
 
     Logger logger() {
@@ -658,57 +660,66 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
         return "[" + dockerContainerName() + "][" + dockerContainerId() + "]";
     }
 
-    //If ArchiveManagementFeatureInfo is supported, then ArchiveManagement methods must scripted
+    // If ArchiveManagementFeatureInfo is supported, then ArchiveManagement methods must scripted
     // Otherwise it got intercepted here and UnsupportedOperationException is thrown.
     public void archiveDeploy(String archiveName, List<ArchiveLocator> archiveLocators, Properties properties) throws Exception {
-        throw new UnsupportedOperationException("Method archiveDeploy(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method archiveDeploy(...) is not implemented in scripting or this Enabler. Please see interface '"
+                + ArchiveManagement.class.getName() + "' in the SDK API.");
     }
 
-    
     public ArchiveActivationInfo archiveStart(String archiveName, Properties properties) throws Exception {
-        throw new UnsupportedOperationException("Method archiveStart(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method archiveStart(...) is not implemented in scripting or this Enabler. Please see interface '"
+                + ArchiveManagement.class.getName() + "' in the SDK API.");
     }
 
-   
     public ArchiveActivationInfo archiveScaleUp(String archiveName, List<ArchiveLocator> archiveLocators) throws Exception {
-        throw new UnsupportedOperationException("Method archiveScaleUp(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method archiveScaleUp(...) is not implemented in scripting or this Enabler. Please see interface '"
+                + ArchiveManagement.class.getName() + "' in the SDK API.");
     }
 
     public void archiveScaleDown(String archiveName, String archiveId) throws Exception {
-        throw new UnsupportedOperationException("Method archiveScaleDown(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
-        
+        throw new UnsupportedOperationException("Method archiveScaleDown(...) is not implemented in scripting or this Enabler. Please see interface '"
+                + ArchiveManagement.class.getName() + "' in the SDK API.");
+
     }
 
     public void archiveStop(String archiveName, String archiveId, Properties properties) throws Exception {
-        throw new UnsupportedOperationException("Method archiveStop(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method archiveStop(...) is not implemented in scripting or this Enabler. Please see interface '"
+                + ArchiveManagement.class.getName() + "' in the SDK API.");
     }
 
     public void archiveUndeploy(String archiveName, Properties properties) throws Exception {
-        throw new UnsupportedOperationException("Method archiveUndeploy(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method archiveUndeploy(...) is not implemented in scripting or this Enabler. Please see interface '"
+                + ArchiveManagement.class.getName() + "' in the SDK API.");
     }
 
     public ArchiveDetail[] archiveDetect() throws Exception {
-        throw new UnsupportedOperationException("Method archiveDetect() is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method archiveDetect() is not implemented in scripting or this Enabler. Please see interface '"
+                + ArchiveManagement.class.getName() + "' in the SDK API.");
     }
 
     public String[] urlDetect() throws Exception {
-        throw new UnsupportedOperationException("Method urlDetect() is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method urlDetect() is not implemented in scripting or this Enabler. Please see interface '" + ArchiveManagement.class.getName()
+                + "' in the SDK API.");
     }
 
     // For Continuous Deployment
     public File getArchive(String archiveName) throws Exception {
-        throw new UnsupportedOperationException("Method getArchive(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveProvider.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method getArchive(...) is not implemented in scripting or this Enabler. Please see interface '" + ArchiveProvider.class.getName()
+                + "' in the SDK API.");
     }
-    
+
     @Override
     public File resolveArchive(String deploymentArchiveName, String url, Properties properties, String componentName, File destDir) throws Exception {
-        throw new UnsupportedOperationException("Method resolveArchive(...) is not implemented in scripting or this Enabler. Please see abstract class '" + AbstractContainer.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method resolveArchive(...) is not implemented in scripting or this Enabler. Please see abstract class '"
+                + AbstractContainer.class.getName() + "' in the SDK API.");
     }
 
     // For ComponentNotification
     @Override
     public void componentNotification(String componentName, List<NotificationEngineInfo> notificationEngineInfo) {
-        throw new UnsupportedOperationException("Method componentNotification(...) is not implemented in scripting or this Enabler. Please see abstract class '" + AbstractContainer.class.getName() + "' in the SDK API.");
+        throw new UnsupportedOperationException("Method componentNotification(...) is not implemented in scripting or this Enabler. Please see abstract class '"
+                + AbstractContainer.class.getName() + "' in the SDK API.");
     }
 
 }
