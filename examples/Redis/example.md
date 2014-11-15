@@ -10,7 +10,7 @@ Highlights
  - shows how to map Docker host ports to internal Docker container ports
  - automatic port increments across Silver Fabric engines for Redis listening port
  - shows how to set environment variables into Docker container
- - shows usage of [Silver Fabric runtime context variables and variable substitutions](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_GhostBlog_rcv.gif)
+ - shows usage of [Silver Fabric runtime context variables and variable substitutions](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_Redis_rcv.gif)
 
 Setup
 ------
