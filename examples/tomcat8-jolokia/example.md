@@ -34,6 +34,6 @@ Setup
 - (6) Access the Tomcat URL : 
       
       ```bash
-        http::8080/tomcat8
+        http:://<broker_host>:8080/tomcat8
       ```
       ***Note***: This should redirect you to the real endpoint where the container is running.
