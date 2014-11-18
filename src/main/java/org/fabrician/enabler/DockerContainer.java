@@ -27,6 +27,7 @@ import org.fabrician.enabler.util.DockerActivationInfo.Entry;
 import org.fabrician.enabler.util.DockerfileBuildLock;
 import org.fabrician.enabler.util.ExecCmdProcessInjector;
 import org.fabrician.enabler.util.RunCmdAuxiliaryOptions;
+import org.fabrician.enabler.util.SpecialDirective;
 
 import com.datasynapse.fabric.admin.info.NotificationEngineInfo;
 import com.datasynapse.fabric.common.ActivationInfo;
@@ -53,7 +54,12 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
-
+import static org.fabrician.enabler.util.SpecialDirective.PORT_EXPOSE;
+import static org.fabrician.enabler.util.SpecialDirective.PORT_MAP;
+import static org.fabrician.enabler.util.SpecialDirective.VOL_MAP;
+import static org.fabrician.enabler.util.SpecialDirective.ENV_VAR;
+import static org.fabrician.enabler.util.SpecialDirective.ENV_FILE;
+import static org.fabrician.enabler.util.SpecialDirective.SEC_OPT;
 /**
  * A Silver Fabric Docker container proxy.
  * <p>
@@ -69,13 +75,6 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     private static final String DOCKER_CONTAINER_TAG_VAR = "DOCKER_CONTAINER_TAG";
     private static final String USE_SUDO_VAR = "USE_SUDO";
     private static final String REUSE_CONTAINER_VAR = "REUSE_CONTAINER";
-
-    private static final String PORT_EXPOSE_PREFIX = "!PORT_EXPOSE_"; // all context vars that starts with "!PORT_EXPOSE_" are reckoned to be a private container ports to be exposed by convention
-    private static final String PORT_MAP_PREFIX = "!PORT_MAP_"; // all context vars that starts with "!PORT_MAP_" are reckoned to be a host-to-container ports mapping by convention
-    private static final String VOL_MAP_PREFIX = "!VOL_MAP_"; // all context vars that starts with "!VOL_MAP_" are reckoned to be a host-to-container volume mapping by convention
-    private static final String ENV_VAR_PREFIX = "!ENV_VAR_";// all context vars that starts with "!ENV_VAR" are reckoned to be container enviromental variables mapping by convention
-    private static final String ENV_FILE_PREFIX = "!ENV_FILE_";// all context vars that starts with "!ENV_FILE_" are reckoned to be container enviromental variables mapping by convention
-    private static final String SECURITY_OPTION_PREFIX = "!SEC_OPT_";// all context vars that starts with "!SEC_OPT_" are reckoned to be container security options by convention
 
     private static final String EXEC_CMD_FILE_VAR = "EXEC_CMD_FILE";
     private static final String EXEC_CMD_DELAY_VAR = "EXEC_CMD_DELAY";
@@ -186,7 +185,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
             RuntimeContextVariable var = getRuntimeContext().getVariable(i);
             if (var.getTypeInt() != RuntimeContextVariable.OBJECT_TYPE) {
                 String name = var.getName();
-                if (!name.startsWith(PORT_EXPOSE_PREFIX)) {
+                if (!PORT_EXPOSE.prefix(name)) {
                     continue;
                 }
 
@@ -208,7 +207,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
             RuntimeContextVariable var = getRuntimeContext().getVariable(i);
             if (var.getTypeInt() != RuntimeContextVariable.OBJECT_TYPE) {
                 String name = var.getName();
-                if (!name.startsWith(PORT_MAP_PREFIX)) {
+                if (!PORT_MAP.prefix(name)) {
                     continue;
                 }
                 String currentValue = resolveToString(name);
@@ -248,7 +247,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
             RuntimeContextVariable var = getRuntimeContext().getVariable(i);
             if (var.getTypeInt() != RuntimeContextVariable.OBJECT_TYPE) {
                 String name = var.getName();
-                if (!name.startsWith(VOL_MAP_PREFIX)) {
+                if (!VOL_MAP.prefix(name)) {
                     continue;
                 }
                 String currentValue = resolveToString(name);
@@ -267,7 +266,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
             RuntimeContextVariable var = getRuntimeContext().getVariable(i);
             if (var.getTypeInt() != RuntimeContextVariable.OBJECT_TYPE) {
                 String name = var.getName();
-                if (!(name.startsWith(ENV_VAR_PREFIX) || name.startsWith(ENV_FILE_PREFIX))) {
+                if (!(ENV_VAR.prefix(name) || ENV_FILE.prefix(name))) {
                     continue;
                 }
 
@@ -275,9 +274,9 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (currentValue.isEmpty()) {
                     continue;
                 }
-                if (name.startsWith(ENV_VAR_PREFIX)) {
+                if (ENV_VAR.prefix(name)) {
                     sb.append(" -e ").append(currentValue);
-                } else if (name.startsWith(ENV_FILE_PREFIX)) {
+                } else if (ENV_FILE.prefix(name)) {
                     sb.append(" --env-file ").append(currentValue);
                 }
             }
@@ -296,7 +295,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
             RuntimeContextVariable var = getRuntimeContext().getVariable(i);
             if (var.getTypeInt() != RuntimeContextVariable.OBJECT_TYPE) {
                 String name = var.getName();
-                if (!name.startsWith(SECURITY_OPTION_PREFIX)) {
+                if (!SEC_OPT.prefix(name)) {
                     continue;
                 }
                 String currentValue = resolveToString(name);
@@ -602,22 +601,22 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     }
 
     private String resolveToString(String runtimeContextVariableName) throws Exception {
-        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return val;
     }
 
     private int resolveToInteger(String runtimeContextVariableName) throws Exception {
-        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return NumberUtils.toInt(val);
     }
 
     private boolean resolveToBoolean(String runtimeContextVariableName) throws Exception {
-        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return BooleanUtils.toBoolean(val);
     }
 
     private File resolveToFile(String runtimeContextVariableName) throws Exception {
-        String val = resolveVariables(StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return new File(val).getCanonicalFile();
     }
 
