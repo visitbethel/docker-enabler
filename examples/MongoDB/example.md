@@ -33,6 +33,21 @@ Setup
 - (6) Access the MongoDb instance: 
 
       ```
-      curl --user admin:genghis --digest http://<docker_host>:28017/
+      curl --user admin:genghis --digest http://<docker_host>:<docker port>/
       ```
-      where <docker_host> is the host where the MongoDb conatainer is running.
+      where 
+      - `docker_host` is the host where the MongoDb container is running
+      - `docker port` is the publically mapped HTTP port for the running MongoDB
+            
+      You can also access MongoDB via web browser:
+      
+      ```
+      http://<broker_host>:8080/mongodb
+      
+      ```
+      which will redirect to 
+      
+      ```
+      http://<docker_host>:<docker port>/
+      
+      ```
