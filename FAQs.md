@@ -11,7 +11,7 @@ If you are not doing any of the following, use `Default` component type; otherwi
 
 ***Warning***: If you configured a J2EE component type, you ***MUST*** implement scripting for the interface `ArchiveManagement` and possibly `ArchiveProvider` from the `Silver Fabric SDK API`.
 
-####FAQ2. Why is my J2EE platform "XYZ" stack not responding after its Docker container is started?####
+####FAQ2. Why is my J2EE platform "XYZ" stack not responding immediately after its Docker container is started?####
 
 Dockerizing an applications with lengthy boot time into a container do not in general shorten the boot time. You just need to wait till its booted up. All Docker provides is a lightweight "VM" with good enough isolation in seconds to run your application.
 
