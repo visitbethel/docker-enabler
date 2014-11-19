@@ -21,7 +21,7 @@ Depending on how your application has been dockerized, you may use these 4 appro
 
 - Bake the configuration in during a `Dockerfile` build using a combination of content files and variables substitution replacements via a `configure.xml`. The Dockerfile `ADD` and `COPY` command are used in conjunction with the content files.
 
-- Map an external `golden` configuration file/dir to an internal Docker file/dir after preprocessing it using variables substitution replacements via a `configure.xml`
+- Map an external `golden` configuration file/dir to an internal Docker file/dir after preprocessing it using variables substitution replacements via a `configure.xml`. Use `!VOL_MAP_` runtime context variables to accomplish the mapping.
 
 - Pass in Docker container environment variables via `!ENV_VAR_` and `!ENV_FILE_` runtime context variables
 - Use `variable providers` as stipulated in `Silver Fabric SDK API` as source of runtime context variables
