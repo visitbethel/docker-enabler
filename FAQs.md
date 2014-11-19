@@ -24,6 +24,6 @@ Depending on how your application has been dockerized, you may use these 4 appro
 - Map an external `golden` configuration file/dir to an internal Docker file/dir after preprocessing it using variables substitution replacements via a `configure.xml`
 
 - Pass in Docker container environment variables via `!ENV_VAR_` and `!ENV_FILE_` runtime context variables
-- Use `variable providers` as stipulated in `Silver Fabric SDK AP` as source of runtime context variables
+- Use `variable providers` as stipulated in `Silver Fabric SDK API` as source of runtime context variables
 
 ***Note***: Out the box, Silver Fabric allows you to do the above 3 out of 4 approaches.
