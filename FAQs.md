@@ -1,6 +1,10 @@
 Silver Fabric Docker Enabler FAQ
 =================================
 
+####FAQ0. One or more examples doesn't seem to work...What happened?####
+
+All examples have been tested with `ubuntu 14.04`. You may need to rebuild it on your OS based on its version. Sometimes breakage happens due to OS update or patches.
+
 ####FAQ1. Which `component type` should I use when configuring a component from this enabler?####
 
 If you are not doing any of the following, use `Default` component type; otherwise use `J2EE` component type:
