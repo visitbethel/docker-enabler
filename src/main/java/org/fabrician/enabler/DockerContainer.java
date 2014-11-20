@@ -60,6 +60,7 @@ import static org.fabrician.enabler.util.SpecialDirective.VOL_MAP;
 import static org.fabrician.enabler.util.SpecialDirective.ENV_VAR;
 import static org.fabrician.enabler.util.SpecialDirective.ENV_FILE;
 import static org.fabrician.enabler.util.SpecialDirective.SEC_OPT;
+
 /**
  * A Silver Fabric Docker container proxy.
  * <p>
@@ -188,8 +189,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!PORT_EXPOSE.prefix(name)) {
                     continue;
                 }
-
-                String currentValue = resolveToString(name);
+                String currentValue=resolveAndSet(var);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
@@ -210,7 +210,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!PORT_MAP.prefix(name)) {
                     continue;
                 }
-                String currentValue = resolveToString(name);
+                String currentValue=resolveAndSet(var);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
@@ -250,7 +250,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!VOL_MAP.prefix(name)) {
                     continue;
                 }
-                String currentValue = resolveToString(name);
+                String currentValue=resolveAndSet(var);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
@@ -270,7 +270,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                     continue;
                 }
 
-                String currentValue = resolveToString(name);
+                String currentValue=resolveAndSet(var);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
@@ -298,7 +298,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
                 if (!SEC_OPT.prefix(name)) {
                     continue;
                 }
-                String currentValue = resolveToString(name);
+                String currentValue=resolveAndSet(var);
                 if (currentValue.isEmpty()) {
                     continue;
                 }
@@ -601,23 +601,36 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     }
 
     private String resolveToString(String runtimeContextVariableName) throws Exception {
-        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this, StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return val;
     }
 
     private int resolveToInteger(String runtimeContextVariableName) throws Exception {
-        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this, StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return NumberUtils.toInt(val);
     }
 
     private boolean resolveToBoolean(String runtimeContextVariableName) throws Exception {
-        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this, StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return BooleanUtils.toBoolean(val);
     }
 
     private File resolveToFile(String runtimeContextVariableName) throws Exception {
-        String val = SpecialDirective.resolveStringValue(this,StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
+        String val = SpecialDirective.resolveStringValue(this, StringUtils.trimToEmpty(getStringVariableValue(runtimeContextVariableName)));
         return new File(val).getCanonicalFile();
+    }
+
+    private String resolveAndSet(RuntimeContextVariable var) throws Exception {
+        String name = var.getName();
+        String currentValue = StringUtils.trimToEmpty(getStringVariableValue(name));
+        getEngineLogger().fine("Runtime context variable [" + name + "] has current value [" + currentValue + "].");
+        String newValue = resolveToString(name);
+        getEngineLogger().fine("Runtime context variable [" + name + "] has resolved value [" + newValue + "].");
+        if (!newValue.equals(currentValue)) {
+            getEngineLogger().fine("Setting runtime context variable [" + name + "] to new resolved value [" + newValue + "].");
+            var.setValue(newValue);
+        }
+        return newValue;
     }
 
     private void validateHttpFeature() throws Exception {
@@ -634,7 +647,7 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
             if (httpsEnabled && !DynamicVarsUtils.validateIntegerVariable(this, HttpFeatureInfo.HTTPS_PORT_VAR)) {
                 throw new Exception("HTTPS is enabled but the " + HttpFeatureInfo.HTTPS_PORT_VAR + " runtime context variable is not set");
             }
-        }else{
+        } else {
             getEngineLogger().warning("HTTP Feature is disabled");
         }
     }
