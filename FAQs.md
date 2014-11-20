@@ -44,5 +44,5 @@ There are 2 things you can do together:
 - First, obfuscate/encrypt the passwords or any sensitive information tokens that is to be used in the Dockerfile or
 passed as Docker container environment variables. You have to devise a mean within the container start script to obfuscate/decrypt the tokens passed obviously. This is the first layer of obfuscation.
 
-- Secondly, use runtime context variables of type `encrypted` when configuring the obfuscated/encrypted passwords or environment variables while operating around Silver Fabric Broker to prevent any sensitive information from being leaked directly via UI, REST API or Ant tasks. This added a second layer of obfuscation.
+- Secondly, use runtime context variables of type `encrypted` for the obfuscated/encrypted passwords or environment variables above when configuring them in Silver Fabric components to prevent leakage via Silver Fabric UI, REST API or Ant tasks. This added a second layer of obfuscation.
 
