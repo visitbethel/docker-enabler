@@ -31,3 +31,8 @@ Depending on how your application has been dockerized, you may use these 4 appro
 ####FAQ4. When a Silver Fabric component restarts or crashes, what happens to the underlying Docker container it manages?####
 
 The underlying Docker container if previously provisioned is removed completely. We do not want to leave a possibly corrupted container hanging around, since its much easier to spin a new one up quicker.
+
+####FAQ5. What kind of runtime context variable information should I export for a Docker container when its started by a Silver Fabric component?####
+
+Recommended are portable abstractions like configurational parameters, public ports, login infos, URLs, operational parameters, etc.
+Not recommended are `host-to-container volume mappings`, hardware devices since you can't be sure that the all interacting Docker containers are constrained to run on the same `Docker host`.
