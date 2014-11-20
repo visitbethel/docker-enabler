@@ -36,3 +36,13 @@ The underlying Docker container if previously provisioned is removed completely.
 
 Recommended are portable abstractions like configurational parameters, public ports, login infos, URLs, operational parameters, etc.
 Not recommended are `host-to-container volume mappings`, hardware devices since you can't be sure that the all interacting Docker containers are constrained to run on the same `Docker host`.
+
+####FAQ6. I don't want passwords or other sensitive information to be to be seen when building a Dockerfile or passing via Docker environment variables through `!ENV_VAR_` or `!ENV_FILE_`. What can I do?####
+
+There are 2 things you can do together:
+
+- First, obfuscate/encrypt the passwords or any sensitive information tokens that is to be used in the Dockerfile or
+passed as Docker container environment variables. You have to devise a mean within the container start script to obfuscate/decrypt the tokens passed obviously. This is the first layer of obfuscation.
+
+- Secondly, use runtime context variables of type `encrypted` when configuring the obfuscated/encrypted passwords or environment variables while operating around Silver Fabric Broker to prevent any sensitive information from being leaked directly via UI, REST API or Ant tasks. This added a second layer of obfuscation.
+
