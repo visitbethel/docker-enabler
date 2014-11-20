@@ -27,3 +27,7 @@ Depending on how your application has been dockerized, you may use these 4 appro
 - Use `variable providers` as stipulated in `Silver Fabric SDK API` as source of runtime context variables
 
 ***Note***: Out the box, Silver Fabric allows you to do the above 3 out of 4 approaches.
+
+####FAQ4. When a Silver Fabric component restarts or crashes, what happens to the underlying Docker container it manages?####
+
+The underlying Docker container if previously provisioned is removed completely. We do not want to leave a possibly corrupted container hanging around, since its much easier to spin a new one up quicker.
