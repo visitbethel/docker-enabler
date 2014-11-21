@@ -50,4 +50,12 @@ passed as Docker container environment variables. You have to devise a means wit
 
 - Secondly, use runtime context variables of type `encrypted` for the obfuscated/encrypted passwords or environment variables above when configuring them in Silver Fabric components to prevent leakage via Silver Fabric UI, REST API or Ant tasks. This added a second layer of obfuscation.
 
+####FAQ7. What service discovery and configuration mechanism does Silver Fabric provides?####
 
+You may use the following 2 mechanisms:
+
+- Silver Fabric `Component Notification feature`
+
+  This primarily uses Silver Fabric engine `ActivationInfo` as carrier for component(container) info which an engine can query from the broker upon receipt of a notification of one or more components of interest being activated/deactivated.
+
+- Implement a custom `Dynamic Variable Provider` by proxing your favorite distributed key-value stores like `etcd`,`consul`, etc.
