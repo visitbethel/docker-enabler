@@ -47,8 +47,8 @@ Each Silver Fabric engine daemon host needs to be "docker-enabled" before it can
 
 1. Install ***Docker 1.2.0*** or ***Docker 1.3.0*** runtime 
     * See [Install Docker] for details
-2. Configure ***Password-less sudo*** or non-sudo access to run Docker CLI commands and Remote API to avoid password prompting:
-    * See [Password-less sudo] for details
+2. Configure ***Password-less sudo*** or non-root Docker access to run Docker CLI commands and Remote API to avoid password prompting:
+    * See [Non-root Docker access] for details
     * If sudo is not required, the password-less requirement still holds
 3. Configure ***Docker Remote API*** to run a TCP port
     * See [Configure Docker Remote API] for details
@@ -311,7 +311,7 @@ Prefix directive|Purpose|Variable name syntax|Variable value
 
 
 [Install Docker]:https://docs.docker.com/installation/
-[Password-less sudo]:https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access
+[Non-root Docker access]:https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access
 [Configure Docker Remote API]:http://www.virtuallyghetto.com/2014/07/quick-tip-how-to-enable-docker-remote-api.html
 [docker logs]:https://docs.docker.com/reference/commandline/cli/#logs
 [Docker and SELinux]:http://www.projectatomic.io/docs/docker-and-selinux/
