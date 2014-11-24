@@ -106,7 +106,8 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     private DockerClient dockerClient;
     private int maxBuildLockRetries = 20;
     private int buildLockRetryPause = 10;
-
+    private boolean shouldBuild=false;
+    
     public boolean isHttpEnabled() {
         return (httpFeatureInfo != null ? httpFeatureInfo.isHttpEnabled() : false);
     }
@@ -145,22 +146,13 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
         dockerBindAddress = resolveDockerBindingAddress();
         // build image first if needed
         // check if we should build?
-        boolean shouldBuild = resolveToBoolean(BUILD_ALWAYS_VAR);
+        shouldBuild = resolveToBoolean(BUILD_ALWAYS_VAR);
         if (!shouldBuild) {
             getEngineLogger().info("Skipping build..");
             // check if the Docker image exists or not
             boolean image_exist = dockerClient().isImageExist(dockerImage);
             Validate.isTrue(image_exist, "Docker image specified [" + dockerImage + "] is not available on Docker host.");
-        } else {
-            File dockerFile = resolveDockerfile();
-            Optional<DockerfileBuildLock> lock = DockerfileBuildLock.acquire(dockerImage, dockerFile, getMaxBuildLockRetries(), getBuildLockRetryPause());
-            if (lock.isPresent()) {
-                buildDockerImage();
-                lock.get().release();
-            } else {
-                throw new Exception("Can't build from Docker file due to failure to acquire build lock!");
-            }
-        }
+        } 
 
         additionalVariables.add(new RuntimeContextVariable(DOCKER_CONTAINER_TAG_VAR, dockerContainerTag, RuntimeContextVariable.ENVIRONMENT_TYPE));
         additionalVariables.add(new RuntimeContextVariable(DOCKER_CONTAINER_BIND_ADDRESS_VAR, dockerBindAddress, RuntimeContextVariable.STRING_TYPE));
@@ -312,6 +304,17 @@ public class DockerContainer extends ExecContainer implements ArchiveManagement,
     protected void doStart() throws Exception {
         // run the Docker container here
         getEngineLogger().fine("Invoking doStart()...");
+        if(shouldBuild){
+            getEngineLogger().info("Doing Dockerfile build first...");
+            File dockerFile = resolveDockerfile();
+            Optional<DockerfileBuildLock> lock = DockerfileBuildLock.acquire(dockerImage, dockerFile, getMaxBuildLockRetries(), getBuildLockRetryPause());
+            if (lock.isPresent()) {
+                buildDockerImage();
+                lock.get().release();
+            } else {
+                throw new Exception("Can't build from Docker file due to failure to acquire build lock!");
+            }
+        }
         // remove existing container if exists
         removeExistingContainer();
         super.doStart();
