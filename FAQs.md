@@ -59,3 +59,9 @@ You may use the following 2 mechanisms:
   This primarily uses Silver Fabric engine `ActivationInfo` as carrier for component(container) info which an engine can query from the broker upon receipt of a notification of one or more components of interest being activated/deactivated.
 
 - Implement a custom `Dynamic Variable Provider` by proxing your favorite distributed key-value stores like `etcd`,`consul`, etc.
+
+####FAQ8. How does this Enabler keeps track of any sidekick processes spawned under a `supervisord` process management?####
+
+Docker monitors one process in each running container and the container lives or dies with that `primary process`. This Enabler monitors out of the box, the `primary process` only. So, if you are using `supervisord`, only the `supervisord` process is being monitored.  So its possible for the secondary process(es) of interest failing to start or crashed while the parent `primary process` still runs, giving a false illusion that the container is doing fine as a whole. The best solution is for the parent `supervisord` to attempt to start/restart a secondary process a set number of times before exiting to signal a failure. 
+
+Note: The same may be said for processes spawned using the alternative process management `CFEngine`
