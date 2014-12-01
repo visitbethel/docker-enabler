@@ -11,8 +11,8 @@ Highlights
  - automatic port increments across Silver Fabric engines for MongoDb listening port
  - shows how to add content files to Dockeffile build context directory and use them with `ADD`(or `COPY`) command
  - shows usage of [Silver Fabric runtime context variables and variable substitutions](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_nginx_rcv.gif) for
-   - Dockerfile
-   - Content file directory
+   - [Dockerfile](https://github.com/fabrician/docker-enabler/blob/master/examples/Nginx/example_nginx_dockerfile.gif)
+   - [Content file directory](https://github.com/fabrician/docker-enabler/blob/master/examples/Nginx/example_nginx_contentfile.gif)
 
 Setup
 ------
