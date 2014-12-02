@@ -111,14 +111,15 @@ There are 2 kinds of statistics related to a running Docker container:
 If you log to files within the container , you can mount a host "stats volume" using the runtime context variable **DOCKER_STATS_DIR** to the stats volume directory within the container.
 
 ### Container-level statistics###
-* At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API, nor are the container statistics that useful at the moment from the application perspective.
+* At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API, nor are the container statistics that useful at the moment from the application perspective. This is likely to be added as part of Docker API when the Docker matured further.
 
 There are a number of OSS hacks out there but lack of an API means its liable to be broken with Docker runtime evolving. So use it at your own risks.
 
 Regardless of Application-level or Container-level statistics, you can use Silver Fabric's **statistics scripting support** to gather statistics of interest by using `Jython`, `JRuby` or `ECMAScript`.
 The script can be used to call **URLs**(`JMX`, `JDBC`, `HTTP`,etc) supported by the application running within a container or simply read host-to-docker container mounted volumes files located at **DOCKER_STATS_DIR** from a container stats dump.
 
-Example: Get some statistics off a SQL database running in a Docker container.
+Example: Get some statistics off a SQL database running in a Docker container by defining a `getStatistic` method that
+Silver Fabric calls at runtime when a container is activated:
 ```python
  def getStatistic(statName):
      statValue = 0.0
@@ -142,6 +143,8 @@ Example: Get some statistics off a SQL database running in a Docker container.
 
 Note: By default, `Jython 2.52` and `ECMAScript` are enabled in the Silver Fabric Engines.
 See `TIBCO Silver Fabric SDK API, version 5.7` for more details.
+If you want to to extract container stats yourself, you could follow an example like this, via scripting like as highlighted in this article 
+[simple-monitoring-for-docker](http://www.labouisse.com/how-to/2014/11/17/simple-monitoring-for-docker-part-1/)
 
 Logs
 -----
