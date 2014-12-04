@@ -32,6 +32,9 @@ Setup
 
 - (6) Access the Redis instances: 
 
+You can access your `Redis` instances via one of the myriads of [Redis clients](http://redis.io/clients)
+or from another `Redis` server already installed; via its `redis-cli` like so:
+
       ```
       redis-cli -a <password> - h <docker host> - p < docker host port>
       
