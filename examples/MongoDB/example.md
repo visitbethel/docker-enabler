@@ -51,3 +51,4 @@ Setup
       http://<docker_host>:<docker port>/
       
       ```
+Note: The user name and login password for this MongoDB example container is `admin` and `genghis` respectively.
