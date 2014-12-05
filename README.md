@@ -107,11 +107,11 @@ Statistics
 --------------------------------------
 There are 2 kinds of statistics related to a running Docker container:
 ### Application-level statistics###
-* This are often read via some standard mechanism like **JMX** or just log to files.
+* These are often read via some standard mechanism like **JMX** or just log to files.
 If you log to files within the container , you can mount a host "stats volume" using the runtime context variable **DOCKER_STATS_DIR** to the stats volume directory within the container.
 
 ### Container-level statistics###
-* At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API, nor are the container statistics that useful at the moment from the application perspective. This is likely to be added as part of Docker API when the Docker matured further.
+* At the moment, Docker do not have a formal way to extract those statistics via Docker CLI or Remote API, nor are the container statistics that useful at the moment from the application perspective. This is likely to be added as part of Docker API when Docker matured further.
 
 There are a number of OSS hacks out there but lack of an API means its liable to be broken with Docker runtime evolving. So use it at your own risks.
 
