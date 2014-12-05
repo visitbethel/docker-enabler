@@ -65,3 +65,7 @@ You may use the following 2 mechanisms:
 Docker monitors one process in each running container and the container lives or dies with that `primary process`. This Enabler monitors out of the box, the `primary process` only. So, if you are using `supervisord`, only the `supervisord` process is being monitored.  So its possible for the secondary process(es) of interest failing to start or crashed while the parent `primary process` still runs, giving a false illusion that the container is doing fine as a whole. The best solution is for the parent `supervisord` to attempt to start/restart a secondary process a set number of times before exiting to signal a failure. 
 
 Note: The same may be said for processes spawned using the alternative process management `CFEngine`
+
+####FAQ9. Is there an alternative to `supervisord`?
+
+Yes. You may use [S6 supervisor ](http://www.skarnet.org/software/s6/) in manner prescribed [here](http://blog.tutum.co/2014/12/02/docker-and-s6-my-new-favorite-process-supervisor/) to assign a key process whose lifecycle dictates the whole container.
