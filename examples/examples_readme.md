@@ -1,6 +1,7 @@
 Silver Fabric Docker Enabler Examples
 ======================================
 All examples are based on Docker containers running on `Ubuntu 14.04 LTS`.
+The Docker images and Dockerfiles from the public DockerHub verbatim. They are designed to show the various facets of using this Enabler.
 
 Prerequisites
 -------------
