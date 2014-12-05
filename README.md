@@ -68,7 +68,7 @@ Docker containers can be viewed from two perspectives:
 
 This Enabler take the latter view, where a Docker container is treated as alternative application packaging in addition to Silver Fabric's own `gridlib` application packaging mechanism.
 This allows application process from both types of packaging to mix and interact.
-While Docker container advocate single process ala `microservice`, on the otherhand, Silver Fabric `gridlib` allows for more complex traditional application. 
+While Docker container advocate single process ala `microservice` for containerization of applications with high degree of [dockerizability](https://medium.com/@behruz/dockerizability-is-better-than-dockerized-3c08b9dbd84c), on the otherhand, Silver Fabric `gridlib` allows for more complex traditional application packaging. 
 So they can both be used in a complementary way.
 
 We also do not support Docker `--link` and `--volumes-from` features to allow instead the use of Silver Fabric's `component dependency management` to be used to link running processes across different hosts by `exporting runtime context variables`. For example, a Docker container running on host A could be "linked" to a Silver Fabric gridlib application process running on host B by exporting ports and environment variables. Besides allowing an application stack to use components originating from mixed container packaging models, they also overcome's Docker limitation of **same-host** linking only and provides some degree of fault-tolerant by dispersing containers to different hosts.
