@@ -14,6 +14,7 @@ Highlights
  - shows how to set environment variables into Docker containers
  - shows usage of [Silver Fabric runtime context variables substitutions and exporting](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_mongodb_rcv.gif)
  - shows how [exported variables](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_rockmongo_rcv.gif) from MongoDb component are being dynamically used to "link" to the RockMongo web container
+ 
 Setup
 ------
 
