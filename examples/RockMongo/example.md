@@ -16,6 +16,7 @@ Highlights
  - shows how [exported variables](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_rockmongo_rcv.gif) from MongoDb component are being dynamically used to "link" to the RockMongo web container
 Setup
 ------
+
 - (1) Do a pull of MongoDb and RockMongo via docker command:
 
     ```bash
@@ -36,7 +37,7 @@ Setup
       This will launch 1 instance of `MongoDb` Docker container first, followed by 1 instance of `RockMongo` container.
 
 - (6) Manage the `MongoDb` via the `RockMongo` web app: 
-- 
+
       You access `RockMongo` via web browser:
       
       ```
