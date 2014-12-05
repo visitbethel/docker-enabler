@@ -16,41 +16,42 @@ Highlights
  - shows how [exported variables](https://github.com/fabrician/docker-enabler/blob/master/examples/images/example_rockmongo_rcv.gif) from MongoDb component are being dynamically used to "link" to the RockMongo web container
 Setup
 ------
-- (1) Do a pull of MongoDb via docker command:
+- (1) Do a pull of MongoDb and RockMongo via docker command:
 
     ```bash
        docker pull tutum/mongodb
+       docker pull gilacode/rockmongo
     ```
 - (2) Download the `SilverFabricCLI.tar.gz` library from the Broker and unzip into a directory.
-- (3) Download and unzip `MyMongoDB-ant-package.zip`  into the same directory as above
+- (3) Download and unzip `MyMongoDBStack2-ant-package.zip`  into the same directory as above
 - (4) Run the Ant task `build.xml` against a Silver Fabric Broker with this `Silver Fabric Docker Enabler` installed
 
    ```ant
       ant -f build.xml
    ```
-- (5) Run the stack `MyMongoDb` via the Silver Fabric Admin UI.
+   This reconstructs a stack `MyMongoDBStack2` and 2 components `Tutum_MongoDb` and `RockMongo` its composed from.
+   
+- (5) Run the stack `MyMongoDBStack2` via the Silver Fabric Admin UI.
       
-      This will launch 1 instance of MongoDb Docker container.
+      This will launch 1 instance of `MongoDb` Docker container first, followed by 1 instance of `RockMongo` container.
 
-- (6) Access the MongoDb instance: 
-
-      ```
-      curl --user admin:genghis --digest http://<docker_host>:<docker port>/
-      ```
-      where 
-      - `docker_host` is the host where the MongoDb container is running
-      - `docker port` is the publically mapped HTTP port for the running MongoDB
-            
-      You can also access MongoDB via web browser:
+- (6) Manage the `MongoDb` via the `RockMongo` web app: 
+- 
+      You access `RockMongo` via web browser:
       
       ```
-      http://<broker_host>:8080/mongodb
+      http://<broker_host>:8080/rockmongo
       
       ```
       which will redirect to 
       
       ```
-      http://<docker_host>:<docker port>/
+      http://<docker_host>:<docker_port>/
       
       ```
-Note: The user name and login password for this MongoDB example container is `admin` and `genghis` respectively.
+      
+      where `docker_host` is the host where the `RockMongo` Docker container is running
+            `docker_port` is the public port mapped for the `RockMongo` Docker container
+            
+Note: The user name and login password for this `MongoDB` example container is `admin` and `genghis` respectively;
+These are dynamically exported and made available to the depending component `RockMongo`.
