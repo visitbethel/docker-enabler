@@ -233,6 +233,19 @@ Continuous J2EE archives deployment and associated `microscaling` of archives fo
 
 See `TIBCO Silver Fabric SDK API, version 5.7` for more details
 
+FAQs
+-----
+For common [faqs](https://github.com/fabrician/docker-enabler/blob/master/FAQs.md)
+
+How-Tos
+--------
+For common [how-tos](https://github.com/fabrician/docker-enabler/blob/master/How-Tos.md)
+
+Examples
+---------
+
+For [examples](https://github.com/fabrician/docker-enabler/blob/master/examples/examples_readme.md)
+
 
 Runtime Context Variables
 --------------------------------------
@@ -311,18 +324,6 @@ Prefix directive|Purpose|Variable name syntax|Variable value
 **!ENV_FILE_**| Inject a list of environment variables specified as `key=value` pairs from a file into the Docker container|`!ENV_FILE_`xxxx|\<`path to a file`\>
 **!SEC_OPT_**| Specify a Docker conatiner security option(Valid only for Docker \>= 1.3.0)|`!SEC_OPT_`xxxx|One or more from the list [ `label:user:`\<**USER**\>, `label:role:`\<**ROLE**\>, `label:type:`\<**TYPE**\>, `label:level:`\<**LEVEL**\>, `label:disable`,`apparmor:`\<**PROFILE**\>]. See [Docker and SELinux] for detail usage for `USER`,`ROLE`,`TYPE` and `LEVEL`.
 
-FAQs
------
-For common [faqs](https://github.com/fabrician/docker-enabler/blob/master/FAQs.md)
-
-How-Tos
---------
-For common [how-tos](https://github.com/fabrician/docker-enabler/blob/master/How-Tos.md)
-
-Examples
----------
-
-For [examples]()
 
 
 [Install Docker]:https://docs.docker.com/installation/
