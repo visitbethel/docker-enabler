@@ -16,4 +16,4 @@ The latter assumes that you have installed and setup Puppet/Chef on the same `Do
 - You need to download and install  `Apache Ant version 1.8.4+` on the same client machine above.
   See installation guide in the Silver Fabric documentation.
 
-- Run the Ant packages for the examples against the Silver Fabric Broker  to recreate Silver Fabric stacks and its components.
+- Run the [Ant packages for the examples](https://github.com/fabrician/docker-enabler/tree/master/examples) against the Silver Fabric Broker  to recreate Silver Fabric stacks and its components.
