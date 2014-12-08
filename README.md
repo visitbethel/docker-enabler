@@ -241,10 +241,15 @@ How-Tos
 --------
 For common [how-tos](https://github.com/fabrician/docker-enabler/blob/master/How-Tos.md)
 
+Dockerizing guide
+-----------------
+
+For "dockerizing" your existing applications to using Silver Fabric with this Enabler, read this [guide](https://github.com/fabrician/docker-enabler/blob/master/enabler_dockerizing_guide.md)
+
 Examples
 ---------
 
-For [examples](https://github.com/fabrician/docker-enabler/blob/master/examples/examples_readme.md)
+For sample [examples](https://github.com/fabrician/docker-enabler/blob/master/examples/examples_readme.md)
 
 
 Runtime Context Variables
