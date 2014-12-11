@@ -3,7 +3,7 @@ Silver Fabric Docker Enabler FAQ
 
 ####FAQ0. One or more examples doesn't seem to work...What happened?####
 
-All examples have been tested with `ubuntu 14.04`. You may need to rebuild it on your OS based on its version. Sometimes breakage happens due to OS update or patches.
+All examples have been tested with `ubuntu 14.04`. You may need to rebuild it on your OS based on its version. Sometimes breakage happens due to OS update or patches. Docker is also evolving very fast; so sometimes the `Docker Remote API` bindiing maybe broken. Sorry!.
 
 ####FAQ1. Which `component type` should I use when configuring a component from this enabler?####
 
