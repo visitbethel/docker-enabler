@@ -90,3 +90,28 @@ Sample solution
 ----------------
 
 To run the sample solution include here:
+
+- (1) Do a pull of ElasticSearch, Logstash and Kibana via docker pull command:
+
+    ```bash
+       docker pull dockerfile/elasticsearch
+       docker pull arcus/kibana
+       docker pull arcus/logstash
+    ```
+- (2) Download the `SilverFabricCLI.tar.gz` library from the Broker and unzip into a directory.
+- (3) Download and unzip `MyELK-ant-package.zip`  into the same directory as above
+- (4) Run the Ant task `build.xml` against a Silver Fabric Broker with this `Silver Fabric Docker Enabler` installed
+
+   ```ant
+      ant -f build.xml
+   ```
+   This reconstructs a stack `MyELK` and 3 components `ElasticSearch`,`Logstash` and `Kibana` its composed from.
+   
+- (5) Run the stack `MyELK` via the Silver Fabric Admin UI.
+      
+      This will launch 1 instance of `ElasticSearch` Docker container first, followed by 1 instance of `Logstash` and `Kibana` container each.
+
+- (6) Open the `Kibana` web app
+- (7) Send some `syslogs` messages from a sources and refresh the `Kibana` web page and you should see some `syslogs` messages coming through.
+
+     
