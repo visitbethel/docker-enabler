@@ -4,7 +4,8 @@ ELK stack Tutorial
 Overview
 ----------
 
-This example shows you how to create an `ELK stack` based on an adaptation of an [online ELK Docker container tutorial](http://evanhazlett.com/2013/08/Logstash-and-Kibana-via-Docker/) by `Evan Hazlett`.
+This example shows you how to create an `ELK stack` based on an adaptation of [Logstash and Kibana via Docker] (http://evanhazlett.com/2013/08/Logstash-and-Kibana-via-Docker/), an online tutorial by `Evan Hazlett`.
+In this adaptation, we will show you how to use `Silver Fabric Docker Enabler` to specify Silver Fabric components from Docker containers and then "wire" them into a stack.
 
 Briefly, the 3 `ELK` components of the stack are
 
