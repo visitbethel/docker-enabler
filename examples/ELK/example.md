@@ -1,10 +1,10 @@
-ELK stack
-==========
+ELK stack Tutorial
+==================
 
 Overview
 ----------
 
-This example shows you how to create an `ELK stack` based on adaptation of an [online ELK Docker tutorial](http://evanhazlett.com/2013/08/Logstash-and-Kibana-via-Docker/) by `Evan Hazlett`.
+This example shows you how to create an `ELK stack` based on an adaptation of an [online ELK Docker container tutorial](http://evanhazlett.com/2013/08/Logstash-and-Kibana-via-Docker/) by `Evan Hazlett`.
 
 Briefly, the 3 `ELK` components of the stack are
 
@@ -86,3 +86,7 @@ We can also create a Docker container that logs directly to the running `Logstas
 
 #####Important: Remember to use the `LOGSTASH_SYSLOG_PORT` TCP port value and the `Docker host` IP where the `Logstash` is running.
 
+Sample solution
+----------------
+
+To run the sample solution include here:
