@@ -71,4 +71,18 @@ or,
 `Syslog` sources
 -----------------
 
-TODO
+There are variety of ways to send `syslog` messages to the runnning `Logstash`:
+
+- Some standalone sources via `syslog` tools:
+   - Linux [logger utility](http://manpages.ubuntu.com/manpages/precise/man1/logger.1.html)
+   - Linux [Logzilla syslogen](https://subversion.assembla.com/svn/logzilla/scripts/contrib/sysloggen/sysloggen)
+   - Windows [Kiwi SyslogGen Freeware](http://www.kiwisyslog.com/help/sysloggen/index.html?kiwisysloggen.htm)
+   - Windows [SysLogGen](http://www.snmpsoft.com/freetools/sysloggen.html)
+   - Java [Slogger](http://syslog-slogger.sourceforge.net/)
+
+- Docker container sources:
+
+We can also create a Docker container that logs directly to the running `Logstash` as highlighted [here for the Apache Tomcat](http://www.unixpowered.com/unixpowered/2012/05/29/configuring-tomcat-to-log-via-syslog/)
+
+#####Important: Remember to use the `LOGSTASH_SYSLOG_PORT` TCP port value and the `Docker host` IP where the `Logstash` is running.
+
