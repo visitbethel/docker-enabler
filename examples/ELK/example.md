@@ -34,19 +34,41 @@ Wiring Docker containers via `Silver Fabric components and stack`
 
 The steps to create an `ELK stack` are as follows:
 
-- First, create a `Silver Fabric componen`t associated with the `ElasticSearch` Docker image above.
+- First, create and publish a `Silver Fabric componen`t associated with the `ElasticSearch` Docker image above.
      Runtime context variables for this component are set like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_elasticsearch_rcv.gif)
 
-- Next, create a `Silver Fabric component` associated with the `Kibana` Docker image above.
+- Next, create and publish a `Silver Fabric component` associated with the `Kibana` Docker image above.
       Runtime context variables for this component are set like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_kibana_rcv.gif)
 
-- Similarly, create a `Silver Fabric component` associated with the `Logstash` Docker image above.
+- Similarly, create and publish a `Silver Fabric component` associated with the `Logstash` Docker image above.
        Runtime context variables for this component are set like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_logstash_rcv.gif)
 
-- Finally, create a `Silver Fabric stack`, `MyELK` wiring the `component dependencies` among `ElasticSearch`.`Kibana` and `LogStash` components like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_myelk_stack_component_dep.gif). 
+- Finally, create and publish `Silver Fabric stack`, `MyELK` wiring the `component dependencies` among `ElasticSearch`.`Kibana` and `LogStash` components like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_myelk_stack_component_dep.gif). 
 
 Note: Components `Kibana` and `Logstash` each, has a `component dependency` on the common component `ElasticSearch`. The dependency can be declared at component-level(as in this example) or specified at stack-level.
 
-Starting ELK stack and forwarding `syslogs` messages
------------------------------------------------------
+Using `ELK stack` to collect `syslogs` messages
+-----------------------------------------------
+
+To use the `ELK stack` created above to collect `syslog` messages from sources, follow the steps below:
+
+- First, start the `Silver Fabric stack` named `MyELK` above by starting it in `MANUAL mode`. This starts the stack immediately.
+- After the stack is started, look at the `engine activation info` associated with the `Silver Fabric component` named `Logstash`. It should look like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_logstash_activationinfo.gif).
+Take note of the value of the `exported runtime context variable` named `LOGSTASH_SYSLOG_PORT`. This is the `TCP port` value where all the `syslog` sources must used to send their logs to the running `Logstash` component(Docker container).
+
+- Next, the `Kibana` web GUI can be accessed via
+```
+   http://<broker_host>:8080/kibana
+   (Assume a route context has been set at "/kibana" for the HTTP feature.)
+```
+
+or,
+```
+   http://<docker_host>:<kibana_http_port>
+   (Look at the engine activation info for component "Kibana" and "HTTP_PORT" runtime context variable value)
+```
+
+`Syslog` sources
+-----------------
+
 TODO
