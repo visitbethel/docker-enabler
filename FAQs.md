@@ -66,6 +66,10 @@ Docker monitors one process in each running container and the container lives or
 
 Note: The same may be said for processes spawned using the alternative process management `CFEngine`
 
-####FAQ9. Is there an alternative to `supervisord`?
+####FAQ9. Is there an alternative to `supervisord`?####
 
 Yes. You may use [S6 supervisor ](http://www.skarnet.org/software/s6/) in manner prescribed [here](http://blog.tutum.co/2014/12/02/docker-and-s6-my-new-favorite-process-supervisor/) to assign a key process whose lifecycle dictates the whole container.
+
+####FAQ10. What if this Enabler don't meet my needs?####
+
+You can always extends it or write your own!. Base on the code and examples that comes with this Enabler, you should be able to write an enabler that meets your need.
