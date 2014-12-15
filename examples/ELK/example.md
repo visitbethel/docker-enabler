@@ -99,9 +99,9 @@ There are variety of ways to send `syslog` messages to the runnning `Logstash`:
    - Windows [SysLogGen](http://www.snmpsoft.com/freetools/sysloggen.html)
    - Java [Slogger](http://syslog-slogger.sourceforge.net/)
 
-- Docker container sources:
+- Docker containers or Silver Fabric Enabler components
 
-We can also create a Docker container that logs directly to the running `Logstash` as highlighted [here for the Apache Tomcat](http://www.unixpowered.com/unixpowered/2012/05/29/configuring-tomcat-to-log-via-syslog/)
+For example, we can create a new Docker container or configure an existing Silver Fabric Enabler to logs directly to the running `Logstash` as highlighted [here for the Apache Tomcat](http://www.unixpowered.com/unixpowered/2012/05/29/configuring-tomcat-to-log-via-syslog/)
 
 #####Important: Remember to use the `LOGSTASH_SYSLOG_PORT` TCP port value and the `Docker host` IP where the `Logstash` is running.
 
