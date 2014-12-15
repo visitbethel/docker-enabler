@@ -1,4 +1,4 @@
-ELK stack Tutorial
+ELK stack tutorial
 ==================
 
 Overview
@@ -20,8 +20,8 @@ Alternatively, we just reused what others has already done on the `DockerHub`:
 - [Logstash](https://registry.hub.docker.com/u/arcus/logstash/)
 - [Kibana](https://registry.hub.docker.com/u/arcus/kibana/)
 
-The Docker container mechanics
-------------------------------
+The Docker container mechanics for `ELK` stack
+----------------------------------------------
 
 The mechanics of the various components are roughly as follows:
 
@@ -33,6 +33,8 @@ The mechanics of the various components are roughly as follows:
 Wiring Docker containers via `Silver Fabric components and stack`
 ----------------------------------------------------------------
 #####The exercise below assumes a basic working knowledge of `TIBCO Silver Fabric` and Docker.
+
+We'll create 3 `Silver Fabric components` associated with the 3 Docker containers above and run each component in `Ad Hoc` stack mode to iteratively create the stack up.
 
 The steps to create named `ELK` stack iteratively are outlined as follows:
 
