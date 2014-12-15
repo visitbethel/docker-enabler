@@ -42,3 +42,12 @@ Containers dependencies are translated into Silver Fabric `component dependencie
 - Log to volume
 
 
+6. Anti-patterns
+-----------------
+Avoid any non-portable Docker `run`options
+Among the most important ones:
+- `--link` and `volumes-from`
+- `--net` other than the default `bridge`
+- `--device`
+
+#####Note: As a rule of thumb, the less your container depends on specific network, device, hardware, CPU and volume-oriented capabilities, the less trouble and hence more usable your container will be across various Cloud providers.
