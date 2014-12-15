@@ -37,28 +37,28 @@ Wiring Docker containers via `Silver Fabric components and stack`
 The steps to create named `ELK` stack iteratively are outlined as follows:
 
 - First, create and publish a `Silver Fabric component` associated with the `ElasticSearch` Docker image above.
-     - Set the Runtime context variables for this component like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_elasticsearch_rcv.gif)
-     - Start the `ElasticSearch` component under `Ad Hoc stack` mode like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_elasticsearch_adhoc_mode.gif)
-     - Wait till the `ElasticSearch` component is [running](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_elasticsearch_engine.gif) as seen in the `Engines view`
-     - Check the  running `ElasticSearch` component's engine activation info; should looked similar to [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_elasticsearch_activationinfo.gif)
+     - Set the Runtime context variables for this component like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_rcv.gif)
+     - Start the `ElasticSearch` component under `Ad Hoc stack` mode like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_adhoc_mode.gif)
+     - Wait till the `ElasticSearch` component is [running](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_engine.gif) as seen in the `Engines view`
+     - Check the  running `ElasticSearch` component's engine activation info; should looked similar to [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_activationinfo.gif)
 
 - Next, create and publish a `Silver Fabric component` associated with the `Kibana` Docker image above.
-     - Set the `HTTP Routing` context like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_kibana_http_routing.gif)
-     - Set the Runtime context variables for this component like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_kibana_rcv.gif)
-     - Set its `component dependency` to component `ElasticSearch` like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_kibana_component_dep.gif)
+     - Set the `HTTP Routing` context like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_kibana_http_routing.gif)
+     - Set the Runtime context variables for this component like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_kibana_rcv.gif)
+     - Set its `component dependency` to component `ElasticSearch` like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_kibana_component_dep.gif)
      - Start the `Kibana` component under `Ad Hoc stack` mode
      - Wait till the `Kibana` component is running as seen in the engines view
-     - Check the running `Kibana` component's engine activation indo; should looked similar to [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_kibana_activationinfo.gif)
+     - Check the running `Kibana` component's engine activation indo; should looked similar to [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_kibana_activationinfo.gif)
      
 - Similarly, create and publish a `Silver Fabric component` associated with the `Logstash` Docker image above
-     - Set Runtime context variables for this component like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_logstash_rcv.gif)
+     - Set Runtime context variables for this component like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_logstash_rcv.gif)
      - Set its `component dependency` to component `ElasticSearch` like in `Kibana` component
      - Start the `Logstash` component under `Ad Hoc stack`
      - Wait till the `Logstash` component is running as seen in the engines view
      - Check the running `Logstash` component's engine activation indo; should looked similar to
-[this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_logstash_activationinfo.gif)
+[this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_logstash_activationinfo.gif)
 
-- Finally, create and publish a named `Silver Fabric stack`, `MyELK` wiring the `component dependencies` among `ElasticSearch`.`Kibana` and `LogStash` components like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_myelk_stack_component_dep.gif).
+- Finally, create and publish a named `Silver Fabric stack`, `MyELK` wiring the `component dependencies` among `ElasticSearch`.`Kibana` and `LogStash` components like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_myelk_stack_component_dep.gif).
 
 Note: 
 - Components `Kibana` and `Logstash` each, already has a `component dependency` on the common component `ElasticSearch`. The dependency can be declared at component-level(as in this example) or specified at stack-level.
@@ -72,7 +72,7 @@ To use the `ELK stack` created above to collect `syslog` messages from sources, 
 - Stop the components `ElasticSearch`,`Kibana` and `Logstash` from running under `Ad Hoc stack` mode
 - Wait till all the components have been stopped and unallocated as seen in the engines view
 - Then, start the named stack `MyELK` above, by starting it in `MANUAL mode`. This starts the stack immediately.
-- After the stack is started, look at the `engine activation info` associated with the `Silver Fabric component` named `Logstash`. It should look like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/example_logstash_activationinfo.gif).
+- After the stack is started, look at the `engine activation info` associated with the `Silver Fabric component` named `Logstash`. It should look like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_logstash_activationinfo.gif).
 Take note of the value of the `exported runtime context variable` named `LOGSTASH_SYSLOG_PORT`. This is the `TCP port` value where all the `syslog` sources must used to send their logs to the running `Logstash` component(Docker container).
 
 - Next, the `Kibana` web GUI can be accessed via
