@@ -39,7 +39,7 @@ We'll create 3 `Silver Fabric components` associated with the 3 Docker container
 The steps to create named `ELK` stack iteratively are outlined as follows:
 
 - First, create and publish a `Silver Fabric component` associated with the `ElasticSearch` Docker image above.
-     - Set the Runtime context variables for this component like [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_rcv.gif)
+     - Set the Runtime context variables for this component like ![this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_rcv.gif?raw=true "ElasticSearch runtime context variables")
      - Start the `ElasticSearch` component under `Ad Hoc stack` mode like [so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_adhoc_mode.gif)
      - Wait till the `ElasticSearch` component is [running](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_engine.gif) as seen in the `Engines view`
      - Check the  running `ElasticSearch` component's engine activation info; should looked similar to [this](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_elasticsearch_activationinfo.gif)
