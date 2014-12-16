@@ -107,6 +107,13 @@ For example, we can create a new Docker container or configure an existing Silve
 
 #####Important: Remember to use the `LOGSTASH_SYSLOG_PORT` TCP port value and the `Docker host` IP where the `Logstash` is running.
 
+An example of using `Kiwi Syslogen` GUI is shown below:
+
+- First enter the value of `LOGSTASH_SYSLOG_PORT` into like
+![so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_syslog_source_kiwigen.gif?raw=true "Example using Kiwi Syslogen GUI as syslogs source")
+
+- Next open the `Kibana` GUI and you will see that the syslogs messages has been forwarded to `ElasticSearch` server by `Logstash` like ![so](https://github.com/fabrician/docker-enabler/blob/master/examples/ELK/images/example_kibana_syslog_input.gif?raw=true "Kibana GUI with syslogs inputs")
+
 Sample solution
 ----------------
 
