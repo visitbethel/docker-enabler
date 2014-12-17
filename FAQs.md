@@ -70,6 +70,10 @@ Note: The same may be said for processes spawned using the alternative process m
 
 Yes. You may use [S6 supervisor ](http://www.skarnet.org/software/s6/) in manner prescribed [here](http://blog.tutum.co/2014/12/02/docker-and-s6-my-new-favorite-process-supervisor/) to assign a key process whose lifecycle dictates the whole container.
 
-####FAQ10. What if this Enabler don't meet my needs?####
+####FAQ10. Why does my container taking a long time to shutdown?####
+
+It is possible that the wrong kind of [base image](http://phusion.github.io/baseimage-docker/) may have been used with the Dockerfile build. As the result, some zombie process(es) may have lingered around that prevented a total shutdown such that Docker have to do a "force kill" eventually.
+
+####FAQ11. What if this Enabler don't meet my needs?####
 
 You can always extends it or write your own!. Base on the code and examples that comes with this Enabler, you should be able to write an enabler that meets your need.
