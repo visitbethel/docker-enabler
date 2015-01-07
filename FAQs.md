@@ -74,6 +74,13 @@ Yes. You may use [S6 supervisor ](http://www.skarnet.org/software/s6/) in manner
 
 It is possible that the wrong kind of [base image](http://phusion.github.io/baseimage-docker/) may have been used with the Dockerfile build. As the result, some zombie process(es) may have lingered around that prevented a total shutdown such that Docker have to do a "force kill" eventually.
 
-####FAQ11. What if this Enabler don't meet my needs?####
+####FAQ11. `--link` and `--volumes-from` not support? Justify this decision####
+
+First, both introduces local tight coupling between containers as well as an artificial `same-location` requirement.
+Secondly, users should deploy applications of like trust and similar performance characteristics on a Docker host. For example, it would not be prudent from security viewpoint to deploy your mission-critical banking application right next to your customer-facing Web service.
+Thirdly, an application stack composed from a set of Docker components would be more resilient if it can utilized containers running on different Docker host in the event of a host crash.
+
+####FAQ12. What if this Enabler don't meet my needs?####
 
 You can always extends it or write your own!. Base on the code and examples that comes with this Enabler, you should be able to write an enabler that meets your need.
+
